@@ -46,7 +46,7 @@ function visualize(canvas: HTMLCanvasElement, analyser: AnalyserNode, ctx: Audio
   } catch(e) {}
   let bufferLength = 2000 * analyser.fftSize / ctx.sampleRate; // analyser.frequencyBinCount;
   let dataArray = new Uint8Array(bufferLength);
-  let contiguousBigPoints : Map<number, number> = new Map();
+  let contiguousBigPoints : number [][] = [];
   let contiguousBigPointsHist : number [][] = [];
 
   canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
@@ -60,23 +60,31 @@ function visualize(canvas: HTMLCanvasElement, analyser: AnalyserNode, ctx: Audio
     let bigPoints = retrieveBig(dataArray);
     let seen : Set<number> = new Set();
     for (let pt of bigPoints) {
-      let count = contiguousBigPoints.get(pt);
-      if (count != undefined) {
-        contiguousBigPoints.set(pt, count + 1);
-      } else {
-        contiguousBigPoints.set(pt, 1);
+      let set = false;
+      for (let i = 0; i < contiguousBigPoints.length; i ++) {
+        let [pt2, count] = contiguousBigPoints[i];
+        if (Math.abs(pt - pt2) <= 2) {
+          contiguousBigPoints[i] = [pt, count + 1];
+          set = true;
+        }
+      }
+      if (!set) {
+        contiguousBigPoints.push([pt, 1]);
       }
       seen.add(pt);
     }
-    contiguousBigPoints.forEach((count, pt) => {
-      if (!seen.has(pt)) {
-        contiguousBigPoints.delete(pt);
+    let newCbp : number[][] = [];
+    contiguousBigPoints.forEach(([pt, count]) => {
+      if (seen.has(pt)) {
+        newCbp.push([pt, count]);
+      } else {
         let freq = pt * ctx.sampleRate / analyser.fftSize;
         if (count >= 10 && MIN_FREQ - 10 <= freq && freq < MAX_FREQ + 10) {
           contiguousBigPointsHist.push([pt, count]);
         }
       }
     });
+    contiguousBigPoints = newCbp;
 
     canvasCtx.drawImage(canvas, 1, 0, WIDTH - 1, HEIGHT, 0, 0, WIDTH - 1, HEIGHT);
 
