@@ -5,6 +5,11 @@ import registerServiceWorker from './registerServiceWorker';
 import './index.css';
 import './polyfill/AudioContext';
 
+const MAX_RAND = 8192;
+const MIN_FREQ = 800;
+const GRAD = 0.02444;
+const MAX_FREQ = GRAD * MAX_RAND + MIN_FREQ;
+
 function main() {
   try {
     let canvas = document.createElement('canvas');
@@ -41,9 +46,8 @@ function visualize(canvas: HTMLCanvasElement, analyser: AnalyserNode, ctx: Audio
   } catch(e) {}
   let bufferLength = 2000 * analyser.fftSize / ctx.sampleRate; // analyser.frequencyBinCount;
   let dataArray = new Uint8Array(bufferLength);
-  let bigPointsHist: number[][] = [];
-
-  let loopCount = 0;
+  let contiguousBigPoints : Map<number, number> = new Map();
+  let contiguousBigPointsHist : number [][] = [];
 
   canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
 
@@ -53,15 +57,26 @@ function visualize(canvas: HTMLCanvasElement, analyser: AnalyserNode, ctx: Audio
     analyser.getByteFrequencyData(dataArray);
     console.log(analyser);
 
-    if ((loopCount ++) % 1 === 0) {
-      let bigPoints = retrieveBig(dataArray);
-      if (bigPoints.length !== 0) {
-        if (bigPointsHist.length >= 6) {
-          bigPointsHist.shift();
-        }
-        bigPointsHist.push(bigPoints);
+    let bigPoints = retrieveBig(dataArray);
+    let seen : Set<number> = new Set();
+    for (let pt of bigPoints) {
+      let count = contiguousBigPoints.get(pt);
+      if (count != undefined) {
+        contiguousBigPoints.set(pt, count + 1);
+      } else {
+        contiguousBigPoints.set(pt, 1);
       }
+      seen.add(pt);
     }
+    contiguousBigPoints.forEach((count, pt) => {
+      if (!seen.has(pt)) {
+        contiguousBigPoints.delete(pt);
+        let freq = pt * ctx.sampleRate / analyser.fftSize;
+        if (count >= 10 && MIN_FREQ - 10 <= freq && freq < MAX_FREQ + 10) {
+          contiguousBigPointsHist.push([pt, count]);
+        }
+      }
+    });
 
     canvasCtx.drawImage(canvas, 1, 0, WIDTH - 1, HEIGHT, 0, 0, WIDTH - 1, HEIGHT);
 
@@ -78,9 +93,12 @@ function visualize(canvas: HTMLCanvasElement, analyser: AnalyserNode, ctx: Audio
       canvasCtx.fillRect(WIDTH - 1, (1 - i / bufferLength) * HEIGHT, WIDTH, (1 - (i + 1) / bufferLength) * HEIGHT);
     }
     document.getElementsByTagName('p')[0].innerText = 'max = ' + String(maxFreq) + 'Hz';
-    document.getElementsByTagName('p')[1].innerText = 'big points = ' + bigPointsHist.map((bigPoints) => {
-      return '[' + bigPoints.map((x) => { return Math.floor(x * ctx.sampleRate / analyser.fftSize); }).join(', ') + ']';
-    }).join(', ');
+    let str = '';
+    for (let [pt, count] of contiguousBigPointsHist) {
+      str += "["+Math.floor(pt * ctx.sampleRate / analyser.fftSize)+", "+count+"]";
+      str += "<br />";
+    }
+    document.getElementsByTagName('p')[1].innerHTML = str;
   };
 
   drawAlt();
