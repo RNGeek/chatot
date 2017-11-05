@@ -36,7 +36,9 @@ function visualize(canvas: HTMLCanvasElement, analyser: AnalyserNode, ctx: Audio
   let WIDTH = canvas.width;
   let HEIGHT = canvas.height;
   let canvasCtx = canvas.getContext('2d') as CanvasRenderingContext2D;
-  // analyser.fftSize = 32768;
+  try {
+    analyser.fftSize = 32768;
+  } catch(e) {}
   let bufferLength = 2000 * analyser.fftSize / ctx.sampleRate; // analyser.frequencyBinCount;
   let dataArray = new Uint8Array(bufferLength);
   let bigPointsHist: number[][] = [];
