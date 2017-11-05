@@ -3,6 +3,7 @@
 // import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 import './index.css';
+import './polyfill/AudioContext';
 
 function main() {
   try {
@@ -48,6 +49,7 @@ function visualize(canvas: HTMLCanvasElement, analyser: AnalyserNode, ctx: Audio
     requestAnimationFrame(drawAlt);
 
     analyser.getByteFrequencyData(dataArray);
+    console.log(analyser);
 
     if ((loopCount ++) % 1 === 0) {
       let bigPoints = retrieveBig(dataArray);
