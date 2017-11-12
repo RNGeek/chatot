@@ -83,8 +83,6 @@ function seed_hit(seed: number, freqs: number[]) {
   return true;
 }
 
-eval("window.seed_hit = seed_hit;");
-
 function visualize(canvas: HTMLCanvasElement, analyser: AnalyserNode, ctx: AudioContext) {
   let WIDTH = canvas.width;
   let HEIGHT = canvas.height;
