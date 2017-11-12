@@ -11,31 +11,79 @@ const GRAD = 0.02444;
 const MAX_FREQ = GRAD * MAX_RAND + MIN_FREQ;
 
 function main() {
-  try {
-    let canvas = document.createElement('canvas');
-    document.body.appendChild(canvas);
-    canvas.width = 1000;
-    canvas.height = 500;
-    let ctx = new AudioContext();
-    let analyser = ctx.createAnalyser();
-    // analyser.minDecibels = -90;
-    analyser.maxDecibels = -40;
-    // analyser.smoothingTimeConstant = 0.85;
-    let gainNode = ctx.createGain();
-    gainNode.gain.value = 0;
+  let canvas = document.createElement('canvas');
+  document.body.appendChild(canvas);
+  canvas.width = 1000;
+  canvas.height = 500;
+  let ctx = new AudioContext();
+  let analyser = ctx.createAnalyser();
+  // analyser.minDecibels = -90;
+  analyser.maxDecibels = -40;
+  // analyser.smoothingTimeConstant = 0.85;
+  let gainNode = ctx.createGain();
+  gainNode.gain.value = 0;
 
-    navigator.mediaDevices.getUserMedia({audio: true}).then((stream: MediaStream) => {
-      let source = ctx.createMediaStreamSource(stream);
-      source.connect(analyser);
-      source.connect(gainNode);
-      gainNode.connect(ctx.destination);
-      visualize(canvas, analyser, ctx);
-    }).catch((err: MediaStreamError) => {
-      alert(err);
+  navigator.mediaDevices.getUserMedia({audio: true}).then((stream: MediaStream) => {
+    let source = ctx.createMediaStreamSource(stream);
+    source.connect(analyser);
+    source.connect(gainNode);
+    gainNode.connect(ctx.destination);
+    visualize(canvas, analyser, ctx);
+    (document.getElementById("search") as HTMLButtonElement).addEventListener('click', (e) => {
+      search();
     });
-    console.log('ok');
-  } catch (e) {alert(e); }
+  }).catch((err: MediaStreamError) => {
+    alert(err);
+  });
 }
+
+function search() {
+  let inputTextarea = document.getElementById("input") as HTMLTextAreaElement;
+  let input = inputTextarea != null ? inputTextarea.value : "";
+  let outputTextarea = document.getElementById("output") as HTMLTextAreaElement;
+  let freqs = (input.match(/\d+/g) || []).map(x => Number(x));
+  let results: number[] = [];
+  for (let seed = 0; seed < 0x20000000; seed ++) {
+    if (seed_hit(seed, freqs)) {
+      for (let i = 0; i < 8; i ++) {
+        results.push(seed + i * 0x20000000);
+      }
+    }
+  }
+  if (results.length > 0) {
+    outputTextarea.value = results.map(x => hex(x)).join("\n");
+  } else {
+    outputTextarea.value = "not found";
+  }
+}
+
+function hex(x: number) {
+  return ("00000000" + x.toString(16)).slice(-8);
+}
+
+class LCG {
+  seed: number;
+  constructor(seed: number) {
+    this.seed = seed;
+  }
+  rand(): number {
+    this.seed = (Math.imul(this.seed, 0x41c64e6d) + 0x6073) >>> 0;
+    return this.seed >>> 16;
+  }
+}
+
+function seed_hit(seed: number, freqs: number[]) {
+  let lcg = new LCG(seed);
+  for (let f of freqs) {
+    let got = (lcg.rand() % 8192) * GRAD + MIN_FREQ;
+    if (Math.abs(f - got) >= 2) {
+      return false;
+    }
+  }
+  return true;
+}
+
+eval("window.seed_hit = seed_hit;");
 
 function visualize(canvas: HTMLCanvasElement, analyser: AnalyserNode, ctx: AudioContext) {
   let WIDTH = canvas.width;
@@ -47,7 +95,6 @@ function visualize(canvas: HTMLCanvasElement, analyser: AnalyserNode, ctx: Audio
   let bufferLength = 2000 * analyser.fftSize / ctx.sampleRate; // analyser.frequencyBinCount;
   let dataArray = new Uint8Array(bufferLength);
   let contiguousBigPoints : number [][] = [];
-  let contiguousBigPointsHist : number [][] = [];
 
   canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
 
@@ -55,7 +102,6 @@ function visualize(canvas: HTMLCanvasElement, analyser: AnalyserNode, ctx: Audio
     requestAnimationFrame(drawAlt);
 
     analyser.getByteFrequencyData(dataArray);
-    console.log(analyser);
 
     let bigPoints = retrieveBig(dataArray);
     let seen : Set<number> = new Set();
@@ -74,13 +120,19 @@ function visualize(canvas: HTMLCanvasElement, analyser: AnalyserNode, ctx: Audio
       seen.add(pt);
     }
     let newCbp : number[][] = [];
+    let chatot_growling = false;
+    let added_pt : number|null = null;
     contiguousBigPoints.forEach(([pt, count]) => {
+      let freq = pt * ctx.sampleRate / analyser.fftSize;
+      let is_chatot = MIN_FREQ - 2 <= freq && freq < MAX_FREQ + 2;
       if (seen.has(pt)) {
         newCbp.push([pt, count]);
+        if (is_chatot) {
+          chatot_growling = true;
+        } 
       } else {
-        let freq = pt * ctx.sampleRate / analyser.fftSize;
-        if (count >= 10 && MIN_FREQ - 10 <= freq && freq < MAX_FREQ + 10) {
-          contiguousBigPointsHist.push([pt, count]);
+        if (count >= 10 && is_chatot) {
+          added_pt = pt;
         }
       }
     });
@@ -97,16 +149,19 @@ function visualize(canvas: HTMLCanvasElement, analyser: AnalyserNode, ctx: Audio
         maxFreq = i * ctx.sampleRate / analyser.fftSize;
       }
 
-      canvasCtx.fillStyle = 'hsl(' + ((1 - mag / 256) * 240) + ',100%,50%)';
+      canvasCtx.fillStyle = 'hsl(' + ((1 - mag / 256) * 240) + ',50%,50%)';
       canvasCtx.fillRect(WIDTH - 1, (1 - i / bufferLength) * HEIGHT, WIDTH, (1 - (i + 1) / bufferLength) * HEIGHT);
     }
-    document.getElementsByTagName('p')[0].innerText = 'max = ' + String(maxFreq) + 'Hz';
-    let str = '';
-    for (let [pt, count] of contiguousBigPointsHist) {
-      str += "["+Math.floor(pt * ctx.sampleRate / analyser.fftSize)+", "+count+"]";
-      str += "<br />";
+    let paragraph = document.getElementById('maxHz') as HTMLParagraphElement;
+    paragraph.innerText = '♪ ' + String(Math.round(maxFreq)) + 'Hz';
+    paragraph.style.backgroundColor = chatot_growling ? "#f9c94f" : "white";
+    if (added_pt) {
+      let textarea = document.getElementById("input") as HTMLTextAreaElement;
+      if (textarea.value != '') {
+        textarea.value += '\n';
+      }
+      textarea.value += Math.round(added_pt * ctx.sampleRate / analyser.fftSize);
     }
-    document.getElementsByTagName('p')[1].innerHTML = str;
   };
 
   drawAlt();
