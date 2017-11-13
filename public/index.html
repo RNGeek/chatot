@@ -27,6 +27,21 @@
     </noscript>
     <div id="root"></div>
     <p id="maxHz"></p>
+    <div id="">
+      <p>
+      <label><input type="radio" name="mode" value="4gen-seed" checked>4gen seed検索</label>
+      </p>
+      <p>
+      <label><input type="radio" name="mode" value="4gen-frame">4gen 消費数検索</label>
+      seed: <input type="text" value="00000000" size=18>
+      消費数: <input type="text" value="1000" size=10>まで
+      </p>
+      <p>
+      <label><input type="radio" name="mode" value="5gen-frame">5gen 消費数検索</label>
+      seed: <input type="text" value="0000000000000000" size=18 >
+      消費数: <input type="text" value="1000" size=10>まで
+      </p>
+    </div>
     <div><textarea id="input" rows=10 cols=40></textarea><br><button id="search">Search</button></div>
     <div><textarea id="output" rows=10 cols=40></textarea></div>
     <!--
