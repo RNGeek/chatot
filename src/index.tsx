@@ -29,7 +29,7 @@ function main() {
     source.connect(gainNode);
     gainNode.connect(ctx.destination);
     visualize(canvas, analyser, ctx);
-    (document.getElementById("search") as HTMLButtonElement).addEventListener('click', (e) => {
+    (document.getElementById('search') as HTMLButtonElement).addEventListener('click', (e) => {
       search();
     });
   }).catch((err: MediaStreamError) => {
@@ -38,9 +38,9 @@ function main() {
 }
 
 function search() {
-  let inputTextarea = document.getElementById("input") as HTMLTextAreaElement;
-  let input = inputTextarea != null ? inputTextarea.value : "";
-  let outputTextarea = document.getElementById("output") as HTMLTextAreaElement;
+  let inputTextarea = document.getElementById('input') as HTMLTextAreaElement;
+  let input = inputTextarea != null ? inputTextarea.value : '';
+  let outputTextarea = document.getElementById('output') as HTMLTextAreaElement;
   let freqs = (input.match(/\d+/g) || []).map(x => Number(x));
   let results: number[] = [];
   for (let seed = 0; seed < 0x20000000; seed ++) {
@@ -51,14 +51,14 @@ function search() {
     }
   }
   if (results.length > 0) {
-    outputTextarea.value = results.map(x => hex(x)).join("\n");
+    outputTextarea.value = results.map(x => hex(x)).join('\n');
   } else {
-    outputTextarea.value = "not found";
+    outputTextarea.value = 'not found';
   }
 }
 
 function hex(x: number) {
-  return ("00000000" + x.toString(16)).slice(-8);
+  return ('00000000' + x.toString(16)).slice(-8);
 }
 
 class LCG {
@@ -133,10 +133,10 @@ function visualize(canvas: HTMLCanvasElement, analyser: AnalyserNode, ctx: Audio
   let canvasCtx = canvas.getContext('2d') as CanvasRenderingContext2D;
   try {
     analyser.fftSize = 32768;
-  } catch(e) {}
+  } catch (e) {}
   let bufferLength = 2000 * analyser.fftSize / ctx.sampleRate; // analyser.frequencyBinCount;
   let dataArray = new Uint8Array(bufferLength);
-  let contiguousBigPoints : number [][] = [];
+  let contiguousBigPoints: number [][] = [];
 
   canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
 
@@ -146,7 +146,7 @@ function visualize(canvas: HTMLCanvasElement, analyser: AnalyserNode, ctx: Audio
     analyser.getByteFrequencyData(dataArray);
 
     let bigPoints = retrieveBig(dataArray);
-    let seen : Set<number> = new Set();
+    let seen: Set<number> = new Set();
     for (let pt of bigPoints) {
       let set = false;
       for (let i = 0; i < contiguousBigPoints.length; i ++) {
@@ -161,20 +161,20 @@ function visualize(canvas: HTMLCanvasElement, analyser: AnalyserNode, ctx: Audio
       }
       seen.add(pt);
     }
-    let newCbp : number[][] = [];
-    let chatot_growling = false;
-    let added_pt : number|null = null;
+    let newCbp: number[][] = [];
+    let chatotGrowling = false;
+    let addedPt: number|null = null;
     contiguousBigPoints.forEach(([pt, count]) => {
       let freq = pt * ctx.sampleRate / analyser.fftSize;
-      let is_chatot = MIN_FREQ - 2 <= freq && freq < MAX_FREQ + 2;
+      let isChatot = MIN_FREQ - 2 <= freq && freq < MAX_FREQ + 2;
       if (seen.has(pt)) {
         newCbp.push([pt, count]);
-        if (is_chatot) {
-          chatot_growling = true;
+        if (isChatot) {
+          chatotGrowling = true;
         } 
       } else {
-        if (count >= 10 && is_chatot) {
-          added_pt = pt;
+        if (count >= 10 && isChatot) {
+          addedPt = pt;
         }
       }
     });
@@ -196,13 +196,13 @@ function visualize(canvas: HTMLCanvasElement, analyser: AnalyserNode, ctx: Audio
     }
     let paragraph = document.getElementById('maxHz') as HTMLParagraphElement;
     paragraph.innerText = '♪ ' + String(Math.round(maxFreq)) + 'Hz';
-    paragraph.style.backgroundColor = chatot_growling ? "#f9c94f" : "white";
-    if (added_pt) {
-      let textarea = document.getElementById("input") as HTMLTextAreaElement;
-      if (textarea.value != '') {
+    paragraph.style.backgroundColor = chatotGrowling ? '#f9c94f' : 'white';
+    if (addedPt) {
+      let textarea = document.getElementById('input') as HTMLTextAreaElement;
+      if (textarea.value !== '') {
         textarea.value += '\n';
       }
-      textarea.value += Math.round(added_pt * ctx.sampleRate / analyser.fftSize);
+      textarea.value += Math.round(addedPt * ctx.sampleRate / analyser.fftSize);
     }
   };
 
