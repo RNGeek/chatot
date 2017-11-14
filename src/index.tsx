@@ -29,11 +29,11 @@ function main() {
     source.connect(gainNode);
     gainNode.connect(ctx.destination);
     visualize(canvas, analyser, ctx);
-    (document.getElementById('search') as HTMLButtonElement).addEventListener('click', (e) => {
-      search();
-    });
   }).catch((err: MediaStreamError) => {
     alert(err);
+  });
+  (document.getElementById('search') as HTMLButtonElement).addEventListener('click', (e) => {
+    search();
   });
 }
 
@@ -41,34 +41,84 @@ function search() {
   let inputTextarea = document.getElementById('input') as HTMLTextAreaElement;
   let input = inputTextarea != null ? inputTextarea.value : '';
   let outputTextarea = document.getElementById('output') as HTMLTextAreaElement;
+  let form = document.getElementById('form') as HTMLFormElement;
+  let radios = form.elements.namedItem('mode');
+  let mode = radios ? radios['value'] as string : '';
+  let iptSeed4gen = form.elements.namedItem('seed-4gen') as HTMLInputElement;
+  let iptFrame4gen = form.elements.namedItem('frame-4gen') as HTMLInputElement;
+  let iptSeed5gen = form.elements.namedItem('seed-5gen') as HTMLInputElement;
+  let iptFrame5gen = form.elements.namedItem('frame-5gen') as HTMLInputElement;
+  let seed4gen = iptSeed4gen ? parseInt(iptSeed4gen.value, 16) : 0;
+  let frame4gen = iptFrame4gen ? Number(iptFrame4gen.value) : 0;
+  let seed5gen = iptSeed5gen ? parseLongLong(iptSeed5gen.value) : new LongLong(0, 0);
+  let frame5gen = iptFrame5gen ? Number(iptFrame5gen.value) : 0;
+
   let freqs = (input.match(/\d+/g) || []).map(x => Number(x));
-  let results: number[] = [];
-  for (let seed = 0; seed < 0x20000000; seed ++) {
-    if (seed_hit(seed, freqs)) {
-      for (let i = 0; i < 8; i ++) {
-        results.push(seed + i * 0x20000000);
+  let results: string[] = [];
+
+  switch (mode) {
+    case '4gen-seed':
+      for (let seed = 0; seed < 0x20000000; seed ++) {
+        if (seed_hit(new LCG(seed), freqs)) {
+          for (let i = 0; i < 8; i ++) {
+            results.push(hex(seed + i * 0x20000000));
+          }
+        }
       }
+      break;
+    case '4gen-frame': {
+      let lcg = new LCG(seed4gen);
+      for (let frame = 0; frame < frame4gen; frame ++) {
+        if (seed_hit(new LCG(lcg.seed), freqs)) {
+          results.push(String(frame));
+        }
+        lcg.rand();
+      }
+      break;
     }
+    case '5gen-frame': {
+      let lcg = new LongLongLCG(seed5gen);
+      for (let frame = 0; frame < frame5gen; frame ++) {
+        if (seed_hit(new LongLongLCG(lcg.seed), freqs)) {
+          results.push(String(frame));
+        }
+        lcg.rand();
+      }
+      break;
+    }
+    default:
   }
   if (results.length > 0) {
-    outputTextarea.value = results.map(x => hex(x)).join('\n');
+    outputTextarea.value = results.join('\n');
   } else {
     outputTextarea.value = 'not found';
   }
+}
+
+function parseLongLong(str: string) {
+  return new LongLong(parseInt(str.substr(0, 8), 16), parseInt(str.substr(8, 8), 16));
 }
 
 function hex(x: number) {
   return ('00000000' + x.toString(16)).slice(-8);
 }
 
-class LCG {
+abstract class AbstractLCG {
+  abstract rand_n(n: number): number;
+}
+
+class LCG extends AbstractLCG {
   seed: number;
   constructor(seed: number) {
+    super();
     this.seed = seed;
   }
   rand(): number {
     this.seed = (Math.imul(this.seed, 0x41c64e6d) + 0x6073) >>> 0;
     return this.seed >>> 16;
+  }
+  rand_n(n: number) {
+    return this.rand() % n;
   }
 }
 
@@ -104,22 +154,26 @@ class LongLong {
 const A = new LongLong(0x5d588b65, 0x6c078965);
 const B = new LongLong(0, 0x269ec3);
 
-class LongLongLCG {
+class LongLongLCG extends AbstractLCG {
   seed: LongLong;
   
-  constructor(high: number, low: number) {
-    this.seed = new LongLong(high, low);
+  constructor(seed: LongLong) {
+    super();
+    this.seed = new LongLong(seed.high, seed.low);
   }
   rand(): number {
     this.seed.mul(A).add(B);
     return this.seed.high;
   }
+  rand_n(n: number) {
+    let r = this.rand();
+    return new LongLong(0, r).mul(new LongLong(0, n)).high;
+  }
 }
 
-function seed_hit(seed: number, freqs: number[]) {
-  let lcg = new LCG(seed);
+function seed_hit(lcg: AbstractLCG, freqs: number[]) {
   for (let f of freqs) {
-    let got = (lcg.rand() % 8192) * GRAD + MIN_FREQ;
+    let got = (lcg.rand_n(8192)) * GRAD + MIN_FREQ;
     if (Math.abs(f - got) >= 2) {
       return false;
     }
