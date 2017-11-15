@@ -4,6 +4,9 @@
 import registerServiceWorker from './registerServiceWorker';
 import './index.css';
 import './polyfill/AudioContext';
+import { LongLong } from './rng/longLong';
+import { hex, parseLongLong } from './rng/util';
+import { LCG, LongLongLCG, AbstractLCG } from './rng/lcg';
 
 const MAX_RAND = 8192;
 const MIN_FREQ = 800;
@@ -92,82 +95,6 @@ function search() {
     outputTextarea.value = results.join('\n');
   } else {
     outputTextarea.value = 'not found';
-  }
-}
-
-function parseLongLong(str: string) {
-  return new LongLong(parseInt(str.substr(0, 8), 16), parseInt(str.substr(8, 8), 16));
-}
-
-function hex(x: number) {
-  return ('00000000' + x.toString(16)).slice(-8);
-}
-
-abstract class AbstractLCG {
-  abstract rand_n(n: number): number;
-}
-
-class LCG extends AbstractLCG {
-  seed: number;
-  constructor(seed: number) {
-    super();
-    this.seed = seed;
-  }
-  rand(): number {
-    this.seed = (Math.imul(this.seed, 0x41c64e6d) + 0x6073) >>> 0;
-    return this.seed >>> 16;
-  }
-  rand_n(n: number) {
-    return this.rand() % n;
-  }
-}
-
-class LongLong {
-  high: number;
-  low: number;
-
-  constructor(high: number, low: number) {
-    this.high = high;
-    this.low = low;
-  }
-
-  add(other: LongLong) {
-    let low = this.low + other.low;
-    let carry = this.low > 0x100000000 ? 1 : 0;
-    this.low = low >>> 0;
-    this.high = (this.high + other.high + carry) >>> 0;
-    return this;
-  }
-
-  mul(other: LongLong) {
-    let a0 = this.low & 0xffff;
-    let a1 = this.low >>> 16;
-    let b0 = other.low & 0xffff;
-    let b1 = other.low >>> 16;
-
-    this.high = (((a1 * b0 + a0 * b1 + (a0 * b0 >>> 16)) >>> 16) + a1 * b1 + Math.imul(this.low, other.high) + Math.imul(other.low, this.high)) >>> 0;
-    this.low = Math.imul(this.low, other.low);
-    return this;
-  }
-}
-
-const A = new LongLong(0x5d588b65, 0x6c078965);
-const B = new LongLong(0, 0x269ec3);
-
-class LongLongLCG extends AbstractLCG {
-  seed: LongLong;
-  
-  constructor(seed: LongLong) {
-    super();
-    this.seed = new LongLong(seed.high, seed.low);
-  }
-  rand(): number {
-    this.seed.mul(A).add(B);
-    return this.seed.high;
-  }
-  rand_n(n: number) {
-    let r = this.rand();
-    return new LongLong(0, r).mul(new LongLong(0, n)).high;
   }
 }
 
