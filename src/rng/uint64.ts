@@ -1,4 +1,4 @@
-export class LongLong {
+export class Uint64 {
   high: number;
   low: number;
 
@@ -7,7 +7,7 @@ export class LongLong {
     this.low = low;
   }
 
-  add(other: LongLong) {
+  add(other: Uint64) {
     let low = this.low + other.low;
     let carry = this.low > 0x100000000 ? 1 : 0;
     this.low = low >>> 0;
@@ -15,7 +15,7 @@ export class LongLong {
     return this;
   }
 
-  mul(other: LongLong) {
+  mul(other: Uint64) {
     let a0 = this.low & 0xffff;
     let a1 = this.low >>> 16;
     let b0 = other.low & 0xffff;

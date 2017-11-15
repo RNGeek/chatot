@@ -1,8 +1,8 @@
-import { LongLong } from './longLong';
+import { Uint64 } from './uint64';
 import { AbstractLCG } from './lcg';
 
-export function parseLongLong(str: string) {
-  return new LongLong(parseInt(str.substr(0, 8), 16), parseInt(str.substr(8, 8), 16));
+export function parseUint64(str: string) {
+  return new Uint64(parseInt(str.substr(0, 8), 16), parseInt(str.substr(8, 8), 16));
 }
 
 export function hex(x: number) {

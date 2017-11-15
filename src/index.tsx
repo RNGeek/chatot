@@ -4,9 +4,9 @@
 import registerServiceWorker from './registerServiceWorker';
 import './index.css';
 import './polyfill/AudioContext';
-import { LongLong } from './rng/longLong';
-import { hex, parseLongLong } from './rng/util';
-import { LCG, LongLongLCG, AbstractLCG } from './rng/lcg';
+import { Uint64 } from './rng/uint64';
+import { hex, parseUint64 } from './rng/util';
+import { LCG, Uint64LCG, AbstractLCG } from './rng/lcg';
 
 const MAX_RAND = 8192;
 const MIN_FREQ = 800;
@@ -53,7 +53,7 @@ function search() {
   let iptFrame5gen = form.elements.namedItem('frame-5gen') as HTMLInputElement;
   let seed4gen = iptSeed4gen ? parseInt(iptSeed4gen.value, 16) : 0;
   let frame4gen = iptFrame4gen ? Number(iptFrame4gen.value) : 0;
-  let seed5gen = iptSeed5gen ? parseLongLong(iptSeed5gen.value) : new LongLong(0, 0);
+  let seed5gen = iptSeed5gen ? parseUint64(iptSeed5gen.value) : new Uint64(0, 0);
   let frame5gen = iptFrame5gen ? Number(iptFrame5gen.value) : 0;
 
   let freqs = (input.match(/\d+/g) || []).map(x => Number(x));
@@ -62,7 +62,7 @@ function search() {
   switch (mode) {
     case '4gen-seed':
       for (let seed = 0; seed < 0x20000000; seed ++) {
-        if (seed_hit(new LCG(seed), freqs)) {
+        if (isValidSeed(new LCG(seed), freqs)) {
           for (let i = 0; i < 8; i ++) {
             results.push(hex(seed + i * 0x20000000));
           }
@@ -72,7 +72,7 @@ function search() {
     case '4gen-frame': {
       let lcg = new LCG(seed4gen);
       for (let frame = 0; frame < frame4gen; frame ++) {
-        if (seed_hit(new LCG(lcg.seed), freqs)) {
+        if (isValidSeed(new LCG(lcg.seed), freqs)) {
           results.push(String(frame));
         }
         lcg.rand();
@@ -80,9 +80,9 @@ function search() {
       break;
     }
     case '5gen-frame': {
-      let lcg = new LongLongLCG(seed5gen);
+      let lcg = new Uint64LCG(seed5gen);
       for (let frame = 0; frame < frame5gen; frame ++) {
-        if (seed_hit(new LongLongLCG(lcg.seed), freqs)) {
+        if (isValidSeed(new Uint64LCG(lcg.seed), freqs)) {
           results.push(String(frame));
         }
         lcg.rand();
@@ -98,9 +98,9 @@ function search() {
   }
 }
 
-function seed_hit(lcg: AbstractLCG, freqs: number[]) {
+function isValidSeed(lcg: AbstractLCG, freqs: number[]) {
   for (let f of freqs) {
-    let got = (lcg.rand_n(8192)) * GRAD + MIN_FREQ;
+    let got = (lcg.randMod(8192)) * GRAD + MIN_FREQ;
     if (Math.abs(f - got) >= 2) {
       return false;
     }
