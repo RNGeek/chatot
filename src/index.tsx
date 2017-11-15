@@ -7,6 +7,7 @@ import './polyfill/AudioContext';
 import { Uint64 } from './rng/uint64';
 import { hex, parseUint64 } from './rng/util';
 import { LCG, Uint64LCG, AbstractLCG } from './rng/lcg';
+import { getMaxFftSize } from './audio/getMaxFftSize';
 
 const MAX_RAND = 8192;
 const MIN_FREQ = 800;
@@ -112,9 +113,7 @@ function visualize(canvas: HTMLCanvasElement, analyser: AnalyserNode, ctx: Audio
   let WIDTH = canvas.width;
   let HEIGHT = canvas.height;
   let canvasCtx = canvas.getContext('2d') as CanvasRenderingContext2D;
-  try {
-    analyser.fftSize = 32768;
-  } catch (e) {}
+  analyser.fftSize = Math.min(32768, getMaxFftSize());
   let bufferLength = 2000 * analyser.fftSize / ctx.sampleRate; // analyser.frequencyBinCount;
   let dataArray = new Uint8Array(bufferLength);
   let contiguousBigPoints: number [][] = [];
