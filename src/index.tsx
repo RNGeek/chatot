@@ -20,24 +20,14 @@ function main() {
   // analyser.minDecibels = -90;
   analyser.maxDecibels = -40;
   // analyser.smoothingTimeConstant = 0.85;
-  
-  // gainの初期化
-  const gainNode = ctx.createGain();
-  gainNode.gain.value = 0;
 
   // マイクへのアクセス要求
   navigator.mediaDevices.getUserMedia({audio: true}).then((stream: MediaStream) => {
-    /*
-     * source(Microphone) ---> analyser
-     *                     \-> gainNode -> destination(Speaker)
-     */
+    // source(Microphone) ---> analyser
     const source = ctx.createMediaStreamSource(stream); // audio source node
     source.connect(analyser);
-    source.connect(gainNode);
-    gainNode.connect(ctx.destination);
 
-    // 音声の解析
-    visualize(analyser, ctx);
+    visualize(analyser, ctx); // 音声の解析
   }).catch((err: MediaStreamError) => {
     alert(err);
   });
@@ -57,14 +47,20 @@ function search() {
   const inputTextarea = document.getElementById('input') as HTMLTextAreaElement;
   const input = inputTextarea != null ? inputTextarea.value : '';
   const form = document.getElementById('form') as HTMLFormElement;
+
+  // mode
   const radios = form.elements.namedItem('mode') as HTMLInputElement;
   const mode = radios ? radios.value as string : '';
+
+  // 4gen 消費数検索
   const iptSeed4gen = form.elements.namedItem('seed-4gen') as HTMLInputElement;
   const iptFrame4gen = form.elements.namedItem('frame-4gen') as HTMLInputElement;
-  const iptSeed5gen = form.elements.namedItem('seed-5gen') as HTMLInputElement;
-  const iptFrame5gen = form.elements.namedItem('frame-5gen') as HTMLInputElement;
   const seed4gen = iptSeed4gen ? parseInt(iptSeed4gen.value, 16) : 0;
   const frame4gen = iptFrame4gen ? Number(iptFrame4gen.value) : 0;
+
+  // 5gen 消費数検索
+  const iptSeed5gen = form.elements.namedItem('seed-5gen') as HTMLInputElement;
+  const iptFrame5gen = form.elements.namedItem('frame-5gen') as HTMLInputElement;
   const seed5gen = iptSeed5gen ? parseUint64(iptSeed5gen.value) : new Uint64(0, 0);
   const frame5gen = iptFrame5gen ? Number(iptFrame5gen.value) : 0;
 
