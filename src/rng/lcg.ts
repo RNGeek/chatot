@@ -34,7 +34,7 @@ export class Uint64LCG extends AbstractLCG {
     return this.seed.high;
   }
   randMod(n: number) {
-    let r = this.rand();
+    const r = this.rand();
     return new Uint64(0, r).mul(new Uint64(0, n)).high;
   }
 }
