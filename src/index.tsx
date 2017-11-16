@@ -46,27 +46,35 @@ async function main() {
   });
 }
 
+interface Form extends HTMLFormElement {
+  'mode': HTMLInputElement;
+  'seed-4gen': HTMLInputElement;
+  'frame-4gen': HTMLInputElement;
+  'seed-5gen': HTMLInputElement;
+  'frame-5gen': HTMLInputElement;
+}
+
+// 16進数に変換する. ただし空文字列は 0 に変換される.
+function parseHexString(str: string): number {
+  const num = parseInt(str, 16);
+  return num === NaN ? 0 : num;
+}
+
 function search() {
   // 入出力
-  const inputTextarea = document.getElementById('input') as HTMLTextAreaElement;
-  const input = inputTextarea != null ? inputTextarea.value : '';
-  const form = document.getElementById('form') as HTMLFormElement;
+  const input = (document.getElementById('input') as HTMLTextAreaElement).value;
+  const form = document.getElementById('form') as Form;
 
   // mode
-  const radios = form.elements.namedItem('mode') as HTMLInputElement;
-  const mode = radios ? radios.value as string : '';
+  const mode = form.mode.value;
 
   // 4gen 消費数検索
-  const iptSeed4gen = form.elements.namedItem('seed-4gen') as HTMLInputElement;
-  const iptFrame4gen = form.elements.namedItem('frame-4gen') as HTMLInputElement;
-  const seed4gen = iptSeed4gen ? parseInt(iptSeed4gen.value, 16) : 0;
-  const frame4gen = iptFrame4gen ? Number(iptFrame4gen.value) : 0;
+  const seed4gen = parseInt(form['seed-4gen'].value, 16) || 0; // NaN を 0 として扱う
+  const frame4gen = parseInt(form['frame-4gen'].value, 10) || 0; // NaN を 0 として扱う
 
   // 5gen 消費数検索
-  const iptSeed5gen = form.elements.namedItem('seed-5gen') as HTMLInputElement;
-  const iptFrame5gen = form.elements.namedItem('frame-5gen') as HTMLInputElement;
-  const seed5gen = iptSeed5gen ? parseUint64(iptSeed5gen.value) : new Uint64(0, 0);
-  const frame5gen = iptFrame5gen ? Number(iptFrame5gen.value) : 0;
+  const seed5gen = parseUint64(form['seed-5gen'].value);
+  const frame5gen = parseInt(form['frame-5gen'].value, 10) || 0; // NaN を 0 として扱う
 
   const freqs = input.split('\n').map(x => Number(x));
   const results: string[] = [];
