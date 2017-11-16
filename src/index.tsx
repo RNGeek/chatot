@@ -10,6 +10,7 @@ import { LCG, Uint64LCG, AbstractLCG } from './rng/lcg';
 import { getMaxFftSize } from './audio/getMaxFftSize';
 import { MIN_FREQ, GRAD } from './audio/constant';
 import { visualize } from './audio/visualize';
+import { searchSeedForGen4, searchFrameForGen4, searchFrameForGen5 } from './rng/search';
 
 function main() {
   const ctx = new AudioContext();
@@ -41,7 +42,13 @@ function main() {
     alert(err);
   });
   (document.getElementById('search') as HTMLButtonElement).addEventListener('click', (e) => {
-    search();
+    const results = search();
+    const outputTextarea = document.getElementById('output') as HTMLTextAreaElement;
+    if (results.length > 0) {
+      outputTextarea.value = results.join('\n');
+    } else {
+      outputTextarea.value = 'not found';
+    }
   });
 }
 
@@ -49,7 +56,6 @@ function search() {
   // 入出力
   const inputTextarea = document.getElementById('input') as HTMLTextAreaElement;
   const input = inputTextarea != null ? inputTextarea.value : '';
-  const outputTextarea = document.getElementById('output') as HTMLTextAreaElement;
   const form = document.getElementById('form') as HTMLFormElement;
   const radios = form.elements.namedItem('mode') as HTMLInputElement;
   const mode = radios ? radios.value as string : '';
@@ -65,53 +71,21 @@ function search() {
   const freqs = input.split('\n').map(x => Number(x));
   const results: string[] = [];
 
+  let result;
   switch (mode) {
     case '4gen-seed':
-      for (let seed = 0; seed < 0x20000000; seed ++) {
-        if (isValidSeed(new LCG(seed), freqs)) {
-          for (let i = 0; i < 8; i ++) {
-            results.push(hex(seed + i * 0x20000000));
-          }
-        }
-      }
+      result = searchSeedForGen4(freqs);
       break;
-    case '4gen-frame': {
-      const lcg = new LCG(seed4gen);
-      for (let frame = 0; frame < frame4gen; frame ++) {
-        if (isValidSeed(new LCG(lcg.seed), freqs)) {
-          results.push(String(frame));
-        }
-        lcg.rand();
-      }
+    case '4gen-frame':
+      result = searchFrameForGen4(freqs, seed4gen, frame4gen);
       break;
-    }
-    case '5gen-frame': {
-      const lcg = new Uint64LCG(seed5gen);
-      for (let frame = 0; frame < frame5gen; frame ++) {
-        if (isValidSeed(new Uint64LCG(lcg.seed), freqs)) {
-          results.push(String(frame));
-        }
-        lcg.rand();
-      }
+    case '5gen-frame':
+      result = searchFrameForGen5(freqs, seed5gen, frame5gen);
       break;
-    }
     default:
   }
-  if (results.length > 0) {
-    outputTextarea.value = results.join('\n');
-  } else {
-    outputTextarea.value = 'not found';
-  }
-}
 
-function isValidSeed(lcg: AbstractLCG, freqs: number[]) {
-  for (const f of freqs) {
-    const got = (lcg.randMod(8192)) * GRAD + MIN_FREQ;
-    if (Math.abs(f - got) >= 2) {
-      return false;
-    }
-  }
-  return true;
+  return results;
 }
 
 main();
