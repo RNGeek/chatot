@@ -12,25 +12,29 @@ import { MIN_FREQ, GRAD } from './audio/constant';
 import { visualize } from './audio/visualize';
 import { searchSeedForGen4, searchFrameForGen4, searchFrameForGen5 } from './rng/search';
 
-function main() {
-  const ctx = new AudioContext();
-
-  // analyserの初期化
-  const analyser = ctx.createAnalyser();
-  // analyser.minDecibels = -90;
-  analyser.maxDecibels = -40;
-  // analyser.smoothingTimeConstant = 0.85;
+async function main() {
 
   // マイクへのアクセス要求
-  navigator.mediaDevices.getUserMedia({audio: true}).then((stream: MediaStream) => {
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    const ctx = new AudioContext();
+
     // source(Microphone) ---> analyser
     const source = ctx.createMediaStreamSource(stream); // audio source node
+
+    // analyserの初期化
+    const analyser = ctx.createAnalyser();
+    // analyser.minDecibels = -90;
+    analyser.maxDecibels = -40;
+    // analyser.smoothingTimeConstant = 0.85;
     source.connect(analyser);
 
     visualize(analyser, ctx); // 音声の解析
-  }).catch((err: MediaStreamError) => {
-    alert(err);
-  });
+  } catch (e) {
+    alert(e);
+  }
+
   (document.getElementById('search') as HTMLButtonElement).addEventListener('click', (e) => {
     const results = search();
     const outputTextarea = document.getElementById('output') as HTMLTextAreaElement;
