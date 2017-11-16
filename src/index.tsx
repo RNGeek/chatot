@@ -38,12 +38,13 @@ function main() {
 }
 
 function search() {
+  // 入出力
   const inputTextarea = document.getElementById('input') as HTMLTextAreaElement;
   const input = inputTextarea != null ? inputTextarea.value : '';
   const outputTextarea = document.getElementById('output') as HTMLTextAreaElement;
   const form = document.getElementById('form') as HTMLFormElement;
-  const radios = form.elements.namedItem('mode');
-  const mode = radios ? radios['value'] as string : '';
+  const radios = form.elements.namedItem('mode') as HTMLInputElement;
+  const mode = radios ? radios.value as string : '';
   const iptSeed4gen = form.elements.namedItem('seed-4gen') as HTMLInputElement;
   const iptFrame4gen = form.elements.namedItem('frame-4gen') as HTMLInputElement;
   const iptSeed5gen = form.elements.namedItem('seed-5gen') as HTMLInputElement;
@@ -53,7 +54,7 @@ function search() {
   const seed5gen = iptSeed5gen ? parseUint64(iptSeed5gen.value) : new Uint64(0, 0);
   const frame5gen = iptFrame5gen ? Number(iptFrame5gen.value) : 0;
 
-  const freqs = (input.match(/\d+/g) || []).map(x => Number(x));
+  const freqs = input.split('\n').map(x => Number(x));
   const results: string[] = [];
 
   switch (mode) {
