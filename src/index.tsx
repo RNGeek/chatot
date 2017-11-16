@@ -60,7 +60,7 @@ function parseHexString(str: string): number {
   return num === NaN ? 0 : num;
 }
 
-function search() {
+function search(): string[] {
   // 入出力
   const input = (document.getElementById('input') as HTMLTextAreaElement).value;
   const form = document.getElementById('form') as Form;
@@ -77,18 +77,17 @@ function search() {
   const frame5gen = parseInt(form['frame-5gen'].value, 10) || 0; // NaN を 0 として扱う
 
   const freqs = input.split('\n').map(x => Number(x));
-  const results: string[] = [];
 
-  let result;
+  let results: string[] = [];
   switch (mode) {
     case '4gen-seed':
-      result = searchSeedForGen4(freqs);
+      results = searchSeedForGen4(freqs);
       break;
     case '4gen-frame':
-      result = searchFrameForGen4(freqs, seed4gen, frame4gen);
+      results = searchFrameForGen4(freqs, seed4gen, frame4gen);
       break;
     case '5gen-frame':
-      result = searchFrameForGen5(freqs, seed5gen, frame5gen);
+      results = searchFrameForGen5(freqs, seed5gen, frame5gen);
       break;
     default:
   }
