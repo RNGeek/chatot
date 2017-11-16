@@ -10,14 +10,11 @@ import { LCG, Uint64LCG, AbstractLCG } from './rng/lcg';
 import { getMaxFftSize } from './audio/getMaxFftSize';
 import { MIN_FREQ, GRAD } from './audio/constant';
 import { visualize } from './audio/visualize';
-import { searchSeedForGen4, searchFrameForGen4, searchFrameForGen5 } from './rng/search';
+import { searchSeedForGen4, searchFrameForGen4, searchFrameForGen5, search } from './rng/search';
 
 async function main() {
-
-  // マイクへのアクセス要求
-
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    const stream = await navigator.mediaDevices.getUserMedia({audio: true}); // マイクへのアクセス要求
     const ctx = new AudioContext();
 
     // source(Microphone) ---> analyser
@@ -44,47 +41,6 @@ async function main() {
       outputTextarea.value = 'not found';
     }
   });
-}
-
-interface Form extends HTMLFormElement {
-  'mode': HTMLInputElement;
-  'seed-4gen': HTMLInputElement;
-  'frame-4gen': HTMLInputElement;
-  'seed-5gen': HTMLInputElement;
-  'frame-5gen': HTMLInputElement;
-}
-
-function search(): string[] {
-  // mode
-  const form = document.getElementById('form') as Form;
-  const mode = form.mode.value;
-
-  // 4gen 消費数検索
-  const seed4gen = parseInt(form['seed-4gen'].value, 16) || 0; // NaN を 0 として扱う
-  const frame4gen = parseInt(form['frame-4gen'].value, 10) || 0; // NaN を 0 として扱う
-
-  // 5gen 消費数検索
-  const seed5gen = parseUint64(form['seed-5gen'].value);
-  const frame5gen = parseInt(form['frame-5gen'].value, 10) || 0; // NaN を 0 として扱う
-
-  const input = (document.getElementById('input') as HTMLTextAreaElement).value;
-  const freqs = input.split('\n').map(x => Number(x));
-
-  let results: string[] = [];
-  switch (mode) {
-    case '4gen-seed':
-      results = searchSeedForGen4(freqs);
-      break;
-    case '4gen-frame':
-      results = searchFrameForGen4(freqs, seed4gen, frame4gen);
-      break;
-    case '5gen-frame':
-      results = searchFrameForGen5(freqs, seed5gen, frame5gen);
-      break;
-    default:
-  }
-
-  return results;
 }
 
 main();
