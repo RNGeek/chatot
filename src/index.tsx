@@ -54,18 +54,9 @@ interface Form extends HTMLFormElement {
   'frame-5gen': HTMLInputElement;
 }
 
-// 16進数に変換する. ただし空文字列は 0 に変換される.
-function parseHexString(str: string): number {
-  const num = parseInt(str, 16);
-  return num === NaN ? 0 : num;
-}
-
 function search(): string[] {
-  // 入出力
-  const input = (document.getElementById('input') as HTMLTextAreaElement).value;
-  const form = document.getElementById('form') as Form;
-
   // mode
+  const form = document.getElementById('form') as Form;
   const mode = form.mode.value;
 
   // 4gen 消費数検索
@@ -76,6 +67,7 @@ function search(): string[] {
   const seed5gen = parseUint64(form['seed-5gen'].value);
   const frame5gen = parseInt(form['frame-5gen'].value, 10) || 0; // NaN を 0 として扱う
 
+  const input = (document.getElementById('input') as HTMLTextAreaElement).value;
   const freqs = input.split('\n').map(x => Number(x));
 
   let results: string[] = [];
