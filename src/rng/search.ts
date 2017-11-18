@@ -1,5 +1,5 @@
 import { AbstractLCG, LCG, Uint64LCG } from './lcg';
-import { RATIO, MIN_FREQ } from '../audio/constant';
+import { RATIO } from '../audio/constant';
 import { hex, parseUint64 } from './util';
 import { Uint64 } from './uint64';
 
@@ -12,6 +12,8 @@ interface Form extends HTMLFormElement {
 }
 
 export function search(): string[] {
+  const minFreq = Number((document.getElementById('freq') as HTMLInputElement).value);
+
   // mode
   const form = document.getElementById('form') as Form;
   const mode = form.mode.value;
@@ -30,13 +32,13 @@ export function search(): string[] {
   let results: string[] = [];
   switch (mode) {
     case '4gen-seed':
-      results = searchSeedForGen4(freqs);
+      results = searchSeedForGen4(freqs, minFreq);
       break;
     case '4gen-frame':
-      results = searchFrameForGen4(freqs, seed4gen, frame4gen);
+      results = searchFrameForGen4(freqs, seed4gen, frame4gen, minFreq);
       break;
     case '5gen-frame':
-      results = searchFrameForGen5(freqs, seed5gen, frame5gen);
+      results = searchFrameForGen5(freqs, seed5gen, frame5gen, minFreq);
       break;
     default:
   }
@@ -44,10 +46,10 @@ export function search(): string[] {
   return results;
 }
 
-export function searchSeedForGen4(freqs: number[]) {
+export function searchSeedForGen4(freqs: number[], minFreq: number) {
   const results: string[] = [];
   for (let seed = 0; seed < 0x20000000; seed ++) {
-    if (isValidSeed(new LCG(seed), freqs)) {
+    if (isValidSeed(new LCG(seed), freqs, minFreq)) {
       for (let i = 0; i < 8; i ++) {
         results.push(hex(seed + i * 0x20000000));
       }
@@ -56,11 +58,11 @@ export function searchSeedForGen4(freqs: number[]) {
   return results;
 }
 
-export function searchFrameForGen4(freqs: number[], seed: number, maxFrame: number) {
+export function searchFrameForGen4(freqs: number[], seed: number, maxFrame: number, minFreq: number) {
   const results: string[] = [];
   const lcg = new LCG(seed);
   for (let frame = 0; frame < maxFrame; frame ++) {
-    if (isValidSeed(new LCG(lcg.seed), freqs)) {
+    if (isValidSeed(new LCG(lcg.seed), freqs, minFreq)) {
       results.push(String(frame));
     }
     lcg.rand();
@@ -68,11 +70,11 @@ export function searchFrameForGen4(freqs: number[], seed: number, maxFrame: numb
   return results;
 }
 
-export function searchFrameForGen5(freqs: number[], seed: Uint64, maxFrame: number) {
+export function searchFrameForGen5(freqs: number[], seed: Uint64, maxFrame: number, minFreq: number) {
   const results: string[] = [];
   const lcg = new Uint64LCG(seed);
   for (let frame = 0; frame < maxFrame; frame ++) {
-    if (isValidSeed(new Uint64LCG(lcg.seed), freqs)) {
+    if (isValidSeed(new Uint64LCG(lcg.seed), freqs, minFreq)) {
       results.push(String(frame));
     }
     lcg.rand();
@@ -80,9 +82,9 @@ export function searchFrameForGen5(freqs: number[], seed: Uint64, maxFrame: numb
   return results;
 }
 
-function isValidSeed(lcg: AbstractLCG, freqs: number[]) {
+function isValidSeed(lcg: AbstractLCG, freqs: number[], minFreq: number) {
   for (const f of freqs) {
-    const got = (lcg.randMod(8192) * RATIO / 8192 + 1) * MIN_FREQ;
+    const got = (lcg.randMod(8192) * RATIO / 8192 + 1) * minFreq;
     if (Math.abs(f - got) >= 2) {
       return false;
     }

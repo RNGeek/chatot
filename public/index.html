@@ -28,21 +28,22 @@
     <div id="root"></div>
     <form id="form" onsubmit="return false;">
     <p id="maxHz"></p>
-    <div id="">
-      <p>
-      <label><input type="radio" name="mode" value="4gen-seed" checked>4gen seed検索</label>
-      </p>
-      <p>
-      <label><input type="radio" name="mode" value="4gen-frame">4gen 消費数検索</label>
-      seed: <input type="text" name="seed-4gen" value="00000000" size=18>
-      消費数: <input type="text" name="frame-4gen" value="1000" size=10>まで
-      </p>
-      <p>
-      <label><input type="radio" name="mode" value="5gen-frame">5gen 消費数検索</label>
-      seed: <input type="text" name="seed-5gen" value="0000000000000000" size=18 >
-      消費数: <input type="text" name="frame-5gen" value="1000" size=10>まで
-      </p>
-    </div>
+    <p>
+      基準周波数: <input type="text" id="freq" value="880" size=6> Hz
+    </p>
+    <p>
+    <label><input type="radio" name="mode" value="4gen-seed" checked>4gen seed検索</label>
+    </p>
+    <p>
+    <label><input type="radio" name="mode" value="4gen-frame">4gen 消費数検索</label>
+    seed: <input type="text" name="seed-4gen" value="00000000" size=18>
+    消費数: <input type="text" name="frame-4gen" value="1000" size=10>まで
+    </p>
+    <p>
+    <label><input type="radio" name="mode" value="5gen-frame">5gen 消費数検索</label>
+    seed: <input type="text" name="seed-5gen" value="0000000000000000" size=18 >
+    消費数: <input type="text" name="frame-5gen" value="1000" size=10>まで
+    </p>
     <div><textarea id="input" rows=10 cols=40></textarea><br><button id="search">Search</button></div>
     <div><textarea id="output" rows=10 cols=40></textarea></div>
     </form>

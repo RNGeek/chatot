@@ -1,5 +1,5 @@
 import { getMaxFftSize } from './getMaxFftSize';
-import { MIN_FREQ, MAX_FREQ } from './constant';
+import { RATIO } from './constant';
 
 function retrieveBig(data: Uint8Array) {
   const length = data.length;
@@ -64,6 +64,8 @@ export function visualize(analyser: AnalyserNode, ctx: AudioContext) {
     const newCbp: number[][] = [];
     let chatotGrowling = false;
     let addedPt: number|null = null;
+    const MIN_FREQ = Number((document.getElementById('freq') as HTMLInputElement).value);
+    const MAX_FREQ = (RATIO + 1) * MIN_FREQ;
     contiguousBigPoints.forEach(([pt, count]) => {
       const freq = pt * ctx.sampleRate / analyser.fftSize;
       const isChatot = MIN_FREQ - 2 <= freq && freq < MAX_FREQ + 2;
