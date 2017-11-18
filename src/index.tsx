@@ -8,7 +8,6 @@ import { Uint64 } from './rng/uint64';
 import { hex, parseUint64 } from './rng/util';
 import { LCG, Uint64LCG, AbstractLCG } from './rng/lcg';
 import { getMaxFftSize } from './audio/getMaxFftSize';
-import { MIN_FREQ, GRAD } from './audio/constant';
 import { visualize } from './audio/visualize';
 import { searchSeedForGen4, searchFrameForGen4, searchFrameForGen5, search } from './rng/search';
 
