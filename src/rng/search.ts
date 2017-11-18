@@ -1,5 +1,5 @@
 import { AbstractLCG, LCG, Uint64LCG } from './lcg';
-import { GRAD, MIN_FREQ } from '../audio/constant';
+import { RATIO, MIN_FREQ } from '../audio/constant';
 import { hex, parseUint64 } from './util';
 import { Uint64 } from './uint64';
 
@@ -82,7 +82,7 @@ export function searchFrameForGen5(freqs: number[], seed: Uint64, maxFrame: numb
 
 function isValidSeed(lcg: AbstractLCG, freqs: number[]) {
   for (const f of freqs) {
-    const got = (lcg.randMod(8192) * GRAD + 1) * MIN_FREQ;
+    const got = (lcg.randMod(8192) * RATIO / 8192 + 1) * MIN_FREQ;
     if (Math.abs(f - got) >= 2) {
       return false;
     }
