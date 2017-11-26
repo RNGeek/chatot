@@ -35,6 +35,14 @@
     <label><input type="radio" name="mode" value="4gen-seed" checked>4gen seed検索</label>
     </p>
     <p>
+    <label><input type="radio" name="mode" value="4gen-iseed">4gen 初期seed検索</label>
+    月×日+秒+分: <input type="text" name="upper-4gen-iseed" value="" size=5> ± <input type="text" name="upper-err-4gen-iseed" value="1" size=5>
+    時: <input type="text" name="hour-4gen-iseed" value="" size=5>
+    <button id="now-time-button">現在時刻</button>
+    待機フレーム + 年: <input type="text" name="min-frame-4gen-iseed" value="400" size=8> ～ <input type="text" name="max-frame-4gen-iseed" value="1100" size=8>
+    消費数: <input type="text" name="frm-4gen-iseed" value="50" size=8>まで
+    </p>
+    <p>
     <label><input type="radio" name="mode" value="4gen-frm">4gen 消費数検索</label>
     seed: <input type="text" name="seed-4gen" value="00000000" size=18>
     消費数: <input type="text" name="frm-4gen" value="1000" size=10>まで

@@ -5,6 +5,12 @@ import { Uint64 } from './uint64';
 
 interface Form extends HTMLFormElement {
   'mode': HTMLInputElement;
+  'upper-4gen-iseed': HTMLInputElement;
+  'upper-err-4gen-iseed': HTMLInputElement;
+  'hour-4gen-iseed': HTMLInputElement;
+  'min-frame-4gen-iseed': HTMLInputElement;
+  'max-frame-4gen-iseed': HTMLInputElement;
+  'frm-4gen-iseed': HTMLInputElement;
   'seed-4gen': HTMLInputElement;
   'frm-4gen': HTMLInputElement;
   'seed-5gen': HTMLInputElement;
@@ -18,6 +24,14 @@ export function search(): string[] {
   const form = document.getElementById('form') as Form;
   const mode = form.mode.value;
 
+  // 4gen 初期seed検索
+  const upper = parseInt(form['upper-4gen-iseed'].value, 10) || 0; // NaN を 0 として扱う
+  const upperErr = parseInt(form['upper-err-4gen-iseed'].value, 10) || 0; // NaN を 0 として扱う
+  const hour = parseInt(form['hour-4gen-iseed'].value, 10) || 0; // NaN を 0 として扱う
+  const minFrame4genIseed = parseInt(form['min-frame-4gen-iseed'].value, 10) || 0; // NaN を 0 として扱う
+  const maxFrame4genIseed = parseInt(form['max-frame-4gen-iseed'].value, 10) || 0; // NaN を 0 として扱う
+  const frm4genIseed = parseInt(form['frm-4gen-iseed'].value, 10) || 0; // NaN を 0 として扱う
+  
   // 4gen 消費数検索
   const seed4gen = parseInt(form['seed-4gen'].value, 16) || 0; // NaN を 0 として扱う
   const frm4gen = parseInt(form['frm-4gen'].value, 10) || 0; // NaN を 0 として扱う
@@ -34,6 +48,9 @@ export function search(): string[] {
     case '4gen-seed':
       results = searchSeedForGen4(freqs, minFreq);
       break;
+    case '4gen-iseed':
+      results = searchIseedForGen4(freqs, upper, upperErr, hour, minFrame4genIseed, maxFrame4genIseed, frm4genIseed, minFreq);
+      break;
     case '4gen-frm':
       results = searchfrmForGen4(freqs, seed4gen, frm4gen, minFreq);
       break;
@@ -43,6 +60,35 @@ export function search(): string[] {
     default:
   }
 
+  return results;
+}
+
+export function setupNowTimeButton() {
+  const form = document.getElementById('form') as Form;
+  const upperInput = form['upper-4gen-iseed'];
+  const hourInput = form['hour-4gen-iseed'];
+  const button = document.getElementById('now-time-button') as HTMLButtonElement;
+  button.addEventListener('click', () => {
+    const date = new Date();
+    upperInput.value = String(((date.getMonth() + 1) * date.getDate() + date.getMinutes() + date.getSeconds()) % 256);
+    hourInput.value = String(date.getHours());
+  });
+}
+
+export function searchIseedForGen4(freqs: number[], upper: number, upperErr: number, hour: number, minFrame: number, maxFrame: number, maxFrm: number, minFreq: number) {
+  const results: string[] = [];
+  for (let u = upper - upperErr; u < upper + upperErr; u ++) {
+    for (let frame = minFrame; frame <= maxFrame; frame ++) {
+      const seed = ((u << 24) + (hour << 16) + frame) >>> 0;
+      const lcg = new LCG(seed);
+      for (let frm = 0; frm < maxFrm; frm ++) {
+        if (isValidSeed(new LCG(lcg.seed), freqs, minFreq)) {
+          results.push(hex(seed) + ' ' + String(frm));
+        }
+        lcg.rand();
+      }
+    }
+  }
   return results;
 }
 

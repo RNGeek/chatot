@@ -9,7 +9,7 @@ import { hex, parseUint64 } from './rng/util';
 import { LCG, Uint64LCG, AbstractLCG } from './rng/lcg';
 import { getMaxFftSize } from './audio/getMaxFftSize';
 import { visualize } from './audio/visualize';
-import { search } from './rng/search';
+import { search, setupNowTimeButton } from './rng/search';
 
 async function main() {
   try {
@@ -40,6 +40,7 @@ async function main() {
       outputTextarea.value = 'not found';
     }
   });
+  setupNowTimeButton();
 }
 
 main();
