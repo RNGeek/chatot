@@ -49,7 +49,7 @@ function updateCanvas(canvas: HTMLCanvasElement, dataArray: Uint8Array, freqUnit
 }
 
 export function visualize(analyser: AnalyserNode, ctx: AudioContext) {
-  const canvas = setupCanvas();
+  //const canvas = setupCanvas();
 
   analyser.fftSize = Math.min(32768, getMaxFftSize());
   const bufferLength = 2000 * analyser.fftSize / ctx.sampleRate; // analyser.frequencyBinCount;
@@ -118,7 +118,7 @@ export function visualize(analyser: AnalyserNode, ctx: AudioContext) {
       }
       textarea.value += Math.round(addedPt * freqUnit);
     }
-    updateCanvas(canvas, dataArray, freqUnit);
+    //updateCanvas(canvas, dataArray, freqUnit);
   };
 
   drawAlt();
