@@ -24,21 +24,37 @@ function retrieveBig(data: Uint8Array) {
   });
 }
 
-export function visualize(analyser: AnalyserNode, ctx: AudioContext) {
+function setupCanvas() {
   const canvas = document.createElement('canvas');
   document.body.appendChild(canvas);
   canvas.width = 1000;
   canvas.height = 500;
+  return canvas;  
+}
 
+function updateCanvas(canvas: HTMLCanvasElement, dataArray: Uint8Array, freqUnit: number) {
+  const canvasCtx = canvas.getContext("2d");
   const WIDTH = canvas.width;
   const HEIGHT = canvas.height;
-  const canvasCtx = canvas.getContext('2d') as CanvasRenderingContext2D;
+  const bufferLength = dataArray.length;
+  if (!canvasCtx) return;
+  canvasCtx.drawImage(canvas, 1, 0, WIDTH - 1, HEIGHT, 0, 0, WIDTH - 1, HEIGHT);
+  
+  for (let i = 0; i < bufferLength; i++) {
+    const mag = dataArray[i];
+
+    canvasCtx.fillStyle = 'hsl(' + ((1 - mag / 256) * 240) + ',50%,50%)';
+    canvasCtx.fillRect(WIDTH - 1, (1 - i / bufferLength) * HEIGHT, WIDTH, (1 - (i + 1) / bufferLength) * HEIGHT);
+  }
+}
+
+export function visualize(analyser: AnalyserNode, ctx: AudioContext) {
+  const canvas = setupCanvas();
+
   analyser.fftSize = Math.min(32768, getMaxFftSize());
   const bufferLength = 2000 * analyser.fftSize / ctx.sampleRate; // analyser.frequencyBinCount;
   const dataArray = new Uint8Array(bufferLength);
   let contiguousBigPoints: number [][] = [];
-
-  canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
 
   const drawAlt = function() {
     requestAnimationFrame(drawAlt);
@@ -82,19 +98,15 @@ export function visualize(analyser: AnalyserNode, ctx: AudioContext) {
     });
     contiguousBigPoints = newCbp;
 
-    canvasCtx.drawImage(canvas, 1, 0, WIDTH - 1, HEIGHT, 0, 0, WIDTH - 1, HEIGHT);
-
+    const freqUnit = ctx.sampleRate / analyser.fftSize;
     let max = 0;
     let maxFreq = 0;
     for (let i = 0; i < bufferLength; i++) {
       const mag = dataArray[i];
       if (max < mag) {
         max = mag;
-        maxFreq = i * ctx.sampleRate / analyser.fftSize;
+        maxFreq = i * freqUnit;
       }
-
-      canvasCtx.fillStyle = 'hsl(' + ((1 - mag / 256) * 240) + ',50%,50%)';
-      canvasCtx.fillRect(WIDTH - 1, (1 - i / bufferLength) * HEIGHT, WIDTH, (1 - (i + 1) / bufferLength) * HEIGHT);
     }
     const paragraph = document.getElementById('maxHz') as HTMLParagraphElement;
     paragraph.innerText = '♪ ' + String(Math.round(maxFreq)) + 'Hz';
@@ -104,8 +116,9 @@ export function visualize(analyser: AnalyserNode, ctx: AudioContext) {
       if (textarea.value !== '') {
         textarea.value += '\n';
       }
-      textarea.value += Math.round(addedPt * ctx.sampleRate / analyser.fftSize);
+      textarea.value += Math.round(addedPt * freqUnit);
     }
+    updateCanvas(canvas, dataArray, freqUnit);
   };
 
   drawAlt();
