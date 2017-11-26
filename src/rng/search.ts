@@ -18,7 +18,7 @@ interface Form extends HTMLFormElement {
 }
 
 export function search(): string[] {
-  const minFreq = Number((document.getElementById('freq') as HTMLInputElement).value);
+  const minFreq = parseInt((document.getElementById('freq') as HTMLInputElement).value, 10);
 
   // mode
   const form = document.getElementById('form') as Form;
@@ -41,7 +41,7 @@ export function search(): string[] {
   const frm5gen = parseInt(form['frm-5gen'].value, 10) || 0; // NaN を 0 として扱う
 
   const input = (document.getElementById('input') as HTMLTextAreaElement).value;
-  const freqs = input.split('\n').map(x => Number(x));
+  const freqs = input.split('\n').map(x => x === '?' ? 0 : parseInt(x, 10));
 
   let results: string[] = [];
   switch (mode) {
@@ -131,7 +131,7 @@ export function searchfrmForGen5(freqs: number[], seed: Uint64, maxfrm: number, 
 function isValidSeed(lcg: AbstractLCG, freqs: number[], minFreq: number) {
   for (const f of freqs) {
     const got = (lcg.randMod(8192) * RATIO / 8192 + 1) * minFreq;
-    if (Math.abs(f - got) >= 2) {
+    if (f !== 0 && Math.abs(f - got) >= 2) {
       return false;
     }
   }

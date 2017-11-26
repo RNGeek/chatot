@@ -33,11 +33,11 @@ function setupCanvas() {
 }
 
 function updateCanvas(canvas: HTMLCanvasElement, dataArray: Uint8Array, freqUnit: number) {
-  const canvasCtx = canvas.getContext("2d");
+  const canvasCtx = canvas.getContext('2d');
   const WIDTH = canvas.width;
   const HEIGHT = canvas.height;
   const bufferLength = dataArray.length;
-  if (!canvasCtx) return;
+  if (!canvasCtx) { return; }
   canvasCtx.drawImage(canvas, 1, 0, WIDTH - 1, HEIGHT, 0, 0, WIDTH - 1, HEIGHT);
   
   for (let i = 0; i < bufferLength; i++) {
@@ -49,7 +49,7 @@ function updateCanvas(canvas: HTMLCanvasElement, dataArray: Uint8Array, freqUnit
 }
 
 export function visualize(analyser: AnalyserNode, ctx: AudioContext) {
-  //const canvas = setupCanvas();
+  // const canvas = setupCanvas();
 
   analyser.fftSize = Math.min(32768, getMaxFftSize());
   const bufferLength = 2000 * analyser.fftSize / ctx.sampleRate; // analyser.frequencyBinCount;
@@ -76,7 +76,7 @@ export function visualize(analyser: AnalyserNode, ctx: AudioContext) {
         contiguousBigPoints.push([pt, 1]);
       }
       seen.add(pt);
-    }
+    } 
     const newCbp: number[][] = [];
     let chatotGrowling = false;
     let addedPt: number|null = null;
@@ -118,7 +118,7 @@ export function visualize(analyser: AnalyserNode, ctx: AudioContext) {
       }
       textarea.value += Math.round(addedPt * freqUnit);
     }
-    //updateCanvas(canvas, dataArray, freqUnit);
+    // updateCanvas(canvas, dataArray, freqUnit);
   };
 
   drawAlt();
