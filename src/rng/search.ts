@@ -79,7 +79,7 @@ export function searchIseedForGen4(freqs: number[], upper: number, upperErr: num
   const results: string[] = [];
   for (let u = upper - upperErr; u < upper + upperErr; u ++) {
     for (let frame = minFrame; frame <= maxFrame; frame ++) {
-      const seed = ((u << 24) + (hour << 16) + frame) >>> 0;
+      const seed = (((u & 0xff) << 24) + (hour << 16) + frame) >>> 0;
       const lcg = new LCG(seed);
       for (let frm = 0; frm < maxFrm; frm ++) {
         if (isValidSeed(new LCG(lcg.seed), freqs, minFreq)) {
