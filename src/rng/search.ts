@@ -6,9 +6,9 @@ import { Uint64 } from './uint64';
 interface Form extends HTMLFormElement {
   'mode': HTMLInputElement;
   'seed-4gen': HTMLInputElement;
-  'frame-4gen': HTMLInputElement;
+  'frm-4gen': HTMLInputElement;
   'seed-5gen': HTMLInputElement;
-  'frame-5gen': HTMLInputElement;
+  'frm-5gen': HTMLInputElement;
 }
 
 export function search(): string[] {
@@ -20,11 +20,11 @@ export function search(): string[] {
 
   // 4gen 消費数検索
   const seed4gen = parseInt(form['seed-4gen'].value, 16) || 0; // NaN を 0 として扱う
-  const frame4gen = parseInt(form['frame-4gen'].value, 10) || 0; // NaN を 0 として扱う
+  const frm4gen = parseInt(form['frm-4gen'].value, 10) || 0; // NaN を 0 として扱う
 
   // 5gen 消費数検索
   const seed5gen = parseUint64(form['seed-5gen'].value);
-  const frame5gen = parseInt(form['frame-5gen'].value, 10) || 0; // NaN を 0 として扱う
+  const frm5gen = parseInt(form['frm-5gen'].value, 10) || 0; // NaN を 0 として扱う
 
   const input = (document.getElementById('input') as HTMLTextAreaElement).value;
   const freqs = input.split('\n').map(x => Number(x));
@@ -34,11 +34,11 @@ export function search(): string[] {
     case '4gen-seed':
       results = searchSeedForGen4(freqs, minFreq);
       break;
-    case '4gen-frame':
-      results = searchFrameForGen4(freqs, seed4gen, frame4gen, minFreq);
+    case '4gen-frm':
+      results = searchfrmForGen4(freqs, seed4gen, frm4gen, minFreq);
       break;
-    case '5gen-frame':
-      results = searchFrameForGen5(freqs, seed5gen, frame5gen, minFreq);
+    case '5gen-frm':
+      results = searchfrmForGen5(freqs, seed5gen, frm5gen, minFreq);
       break;
     default:
   }
@@ -58,24 +58,24 @@ export function searchSeedForGen4(freqs: number[], minFreq: number) {
   return results;
 }
 
-export function searchFrameForGen4(freqs: number[], seed: number, maxFrame: number, minFreq: number) {
+export function searchfrmForGen4(freqs: number[], seed: number, maxfrm: number, minFreq: number) {
   const results: string[] = [];
   const lcg = new LCG(seed);
-  for (let frame = 0; frame < maxFrame; frame ++) {
+  for (let frm = 0; frm < maxfrm; frm ++) {
     if (isValidSeed(new LCG(lcg.seed), freqs, minFreq)) {
-      results.push(String(frame));
+      results.push(String(frm));
     }
     lcg.rand();
   }
   return results;
 }
 
-export function searchFrameForGen5(freqs: number[], seed: Uint64, maxFrame: number, minFreq: number) {
+export function searchfrmForGen5(freqs: number[], seed: Uint64, maxfrm: number, minFreq: number) {
   const results: string[] = [];
   const lcg = new Uint64LCG(seed);
-  for (let frame = 0; frame < maxFrame; frame ++) {
+  for (let frm = 0; frm < maxfrm; frm ++) {
     if (isValidSeed(new Uint64LCG(lcg.seed), freqs, minFreq)) {
-      results.push(String(frame));
+      results.push(String(frm));
     }
     lcg.rand();
   }

@@ -9,7 +9,7 @@ import { hex, parseUint64 } from './rng/util';
 import { LCG, Uint64LCG, AbstractLCG } from './rng/lcg';
 import { getMaxFftSize } from './audio/getMaxFftSize';
 import { visualize } from './audio/visualize';
-import { searchSeedForGen4, searchFrameForGen4, searchFrameForGen5, search } from './rng/search';
+import { search } from './rng/search';
 
 async function main() {
   try {
