@@ -11,3 +11,8 @@ body {
   text-decoration: none; font: menu; color: ButtonText;
   display: inline-block; padding: 2px 8px;
 }
+
+.input-and-output > div {
+  display: table-cell;
+  vertical-align: middle;
+}
