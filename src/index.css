@@ -4,6 +4,11 @@ body {
   font-family: sans-serif;
 }
 
+h1 {
+  margin: 0;
+  background-color: #ACD6E7;
+}
+
 .likeabutton {
   appearance: button;
   -moz-appearance: button;
