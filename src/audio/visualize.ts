@@ -43,13 +43,17 @@ function updateCanvas(canvas: HTMLCanvasElement, dataArray: Uint8Array, freqUnit
   for (let i = 0; i < bufferLength; i++) {
     const mag = dataArray[i];
 
-    canvasCtx.fillStyle = 'hsl(' + ((1 - mag / 256) * 240) + ',50%,50%)';
+    if (mag > 250) {
+      canvasCtx.fillStyle = 'white';
+    } else {
+      canvasCtx.fillStyle = 'hsl(' + ((1 - mag / 256) * 240) + ',50%,50%)';
+    }
     canvasCtx.fillRect(WIDTH - 1, (1 - i / bufferLength) * HEIGHT, WIDTH, (1 - (i + 1) / bufferLength) * HEIGHT);
   }
 }
 
 export function visualize(analyser: AnalyserNode, ctx: AudioContext) {
-  // const canvas = setupCanvas();
+  const canvas = setupCanvas();
 
   analyser.fftSize = Math.min(32768, getMaxFftSize());
   const bufferLength = 2000 * analyser.fftSize / ctx.sampleRate; // analyser.frequencyBinCount;
@@ -58,6 +62,13 @@ export function visualize(analyser: AnalyserNode, ctx: AudioContext) {
 
   const drawAlt = function() {
     requestAnimationFrame(drawAlt);
+
+    const MIN_FREQ = Number((document.getElementById('freq') as HTMLInputElement).value);
+    const MAX_FREQ = (RATIO + 1) * MIN_FREQ;
+    const maxDecibels = Number((document.getElementById('maxDecibels') as HTMLInputElement).value);
+    if (-100 < maxDecibels && maxDecibels <= 0) {
+      analyser.maxDecibels = maxDecibels;
+    }
 
     analyser.getByteFrequencyData(dataArray);
 
@@ -80,8 +91,6 @@ export function visualize(analyser: AnalyserNode, ctx: AudioContext) {
     const newCbp: number[][] = [];
     let chatotGrowling = false;
     let addedPt: number|null = null;
-    const MIN_FREQ = Number((document.getElementById('freq') as HTMLInputElement).value);
-    const MAX_FREQ = (RATIO + 1) * MIN_FREQ;
     contiguousBigPoints.forEach(([pt, count]) => {
       const freq = pt * ctx.sampleRate / analyser.fftSize;
       const isChatot = MIN_FREQ - 2 <= freq && freq < MAX_FREQ + 2;
@@ -118,7 +127,7 @@ export function visualize(analyser: AnalyserNode, ctx: AudioContext) {
       }
       textarea.value += Math.round(addedPt * freqUnit);
     }
-    // updateCanvas(canvas, dataArray, freqUnit);
+    updateCanvas(canvas, dataArray, freqUnit);
   };
 
   drawAlt();
