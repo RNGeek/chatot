@@ -22,7 +22,7 @@ export function search(): string[] {
 
   // mode
   const form = document.getElementById('form') as Form;
-  const mode = form.mode.value;
+  const mode = (document.querySelector("#form input[name='mode']:checked") as HTMLInputElement).value;
 
   // 4gen 初期seed検索
   const upper = Number(form['upper-4gen-iseed'].value) || 0; // NaN を 0 として扱う
