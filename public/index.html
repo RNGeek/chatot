@@ -18,8 +18,8 @@
       Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
+      <title>chatot</title>
     -->
-    <title>chatot</title>
   </head>
   <body>
     <h1>chatot</h1>
@@ -33,10 +33,7 @@
       基準周波数: <input type="text" id="freq" value="880" size=6> Hz
     </p>
     <p>
-    <label><input type="radio" name="mode" value="4gen-seed" checked>4gen seed検索</label>
-    </p>
-    <p>
-    <label><input type="radio" name="mode" value="4gen-iseed">4gen 初期seed検索</label>
+    <label><input type="radio" name="mode" value="4gen-iseed" checked>4gen 初期seed検索</label>
     月×日+分+秒: <input type="text" name="upper-4gen-iseed" value="" size=5> ± <input type="text" name="upper-err-4gen-iseed" value="1" size=5>
     時: <input type="text" name="hour-4gen-iseed" value="" size=5>
     <button id="now-time-button">現在時刻</button>
