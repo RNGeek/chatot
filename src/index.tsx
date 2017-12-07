@@ -9,7 +9,7 @@ import { hex, parseUint64 } from './rng/util';
 import { LCG, Uint64LCG, AbstractLCG } from './rng/lcg';
 import { getMaxFftSize } from './audio/getMaxFftSize';
 import { visualize } from './audio/visualize';
-import { search, setupNowTimeButton } from './rng/search';
+import { search, setupNowTimeButton, setupFormSegments } from './rng/search';
 
 async function main() {
   try {
@@ -41,6 +41,7 @@ async function main() {
     }
   });
   setupNowTimeButton();
+  setupFormSegments();
 }
 
 main();

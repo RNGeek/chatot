@@ -24,7 +24,7 @@ interface Form extends HTMLFormElement {
   'timer0-min': HTMLInputElement;
   'timer0-max': HTMLInputElement;
   'macaddr': HTMLInputElement;
-  'time': HTMLInputElement;
+  'time': HTMLInputElement; 
   'time-err': HTMLInputElement;
 }
 
@@ -33,7 +33,7 @@ export function search(): string[] {
 
   // mode
   const form = document.getElementById('form') as Form;
-  const mode = (document.querySelector("#form input[name='mode']:checked") as HTMLInputElement).value;
+  const mode = selectedMode();
 
   // 4gen 初期seed検索
   const upper = Number(form['upper-4gen-iseed'].value) || 0; // NaN を 0 として扱う
@@ -74,6 +74,29 @@ export function search(): string[] {
   return results;
 }
 
+function selectedMode() {
+  return (document.querySelector('#form input[name="mode"]:checked') as HTMLInputElement).value;
+}
+
+export function setupFormSegments() {
+  for (const radio of (Array.from(document.querySelectorAll('#form input[name="mode"]')) as HTMLInputElement[])) {
+    radio.addEventListener('click', () => {
+      update();
+    });
+  }
+  update();
+
+  function update() {
+    for (const seg of (Array.from(document.querySelectorAll('div.form-segment')) as HTMLDivElement[])) {
+      if (seg.id == "form-segment-"+selectedMode()) {
+        seg.style.display = "";
+      } else {
+        seg.style.display = "none";
+      }
+    }
+  }
+}
+
 export function setupNowTimeButton() {
   const form = document.getElementById('form') as Form;
   const upperInput = form['upper-4gen-iseed'];
@@ -81,14 +104,14 @@ export function setupNowTimeButton() {
   const button = document.getElementById('now-time-button') as HTMLButtonElement;
   button.addEventListener('click', () => {
     const date = new Date();
-    upperInput.value = "0x" + (((date.getMonth() + 1) * date.getDate() + date.getMinutes() + date.getSeconds()) % 256).toString(16);
+    upperInput.value = '0x' + (((date.getMonth() + 1) * date.getDate() + date.getMinutes() + date.getSeconds()) % 256).toString(16);
     hourInput.value = String(date.getHours());
   });
-  const timeInput = form['time'];
+  const timeInput = form.time;
   const button2 = document.getElementById('now-time-button2') as HTMLButtonElement;
   button2.addEventListener('click', () => {
     const date = new Date();
-    timeInput.value = date.getFullYear() + "-" + dec(date.getMonth(), 2) + "-" + dec(date.getDate(), 2) + " " + dec(date.getHours(), 2) + ":" + dec(date.getMinutes(), 2) + ":" + dec(date.getSeconds(), 2);
+    timeInput.value = date.getFullYear() + '-' + dec(date.getMonth(), 2) + '-' + dec(date.getDate(), 2) + ' ' + dec(date.getHours(), 2) + ':' + dec(date.getMinutes(), 2) + ':' + dec(date.getSeconds(), 2);
   });
 }
 
