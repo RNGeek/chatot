@@ -29,10 +29,6 @@
     </noscript>
     <div id="root"></div>
     <form id="form" onsubmit="return false;">
-    <p id="maxHz"></p>
-    <p>
-      基準周波数: <input type="text" id="freq" value="880" size=6> Hz
-    </p>
     <p>
     <label><input type="radio" name="mode" value="4gen-iseed" checked>4gen 初期seed検索</label>
     <label><input type="radio" name="mode" value="4gen-frm">4gen 消費数検索</label>
@@ -80,11 +76,13 @@
     <div class="input-and-output">
     <div>Input:<br><textarea id="input" rows=10 cols=40></textarea></div>
     <div><input type="submit" id="search" value="Search"></div>
-    <div>Output:<br><textarea id="output" rows=10 cols=40></textarea></div>
+    <div>Output:<br><textarea id="output" rows=10 cols=80></textarea></div>
     </div>
     </form>
+    <p id="maxHz"></p>
     <p>
-      maxDecibels: <input type="text" id="maxDecibels" value="-40" size=6>
+      基準周波数: <input type="text" id="freq" value="880" size=6> Hz
+      &#32;maxDecibels: <input type="text" id="maxDecibels" value="-40" size=6>
     </p>
     <!--
       This HTML file is a template.

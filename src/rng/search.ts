@@ -217,7 +217,7 @@ export function searchIseedForGen5(
       const lcg = new Uint64LCG(seed);
       for (let frm = 0; frm < maxfrm; frm ++) {
         if (isValidSeed(new Uint64LCG(lcg.seed), freqs, minFreq)) {
-          results.push(time.toLocaleString() + " 0x" + timer0.toString(16) + " " + frm);
+          results.push(hex(seed.high)+hex(seed.low)+" time="+time.toLocaleString() + " timer0=0x" + timer0.toString(16) + " f=" + frm);
         }
         lcg.rand();
       }
