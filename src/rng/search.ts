@@ -142,6 +142,55 @@ export function setupNowTimeButton() {
   });
 }
 
+export function save5genParams() {
+  const form = document.getElementById('form') as Form;
+  var obj = {
+    nazo1: form['nazo1'].value,
+    nazo2: form['nazo2'].value,
+    nazo3: form['nazo3'].value,
+    nazo4: form['nazo4'].value,
+    nazo5: form['nazo5'].value,
+    vcount: form['vcount'].value,
+    gxstat: form['gxstat'].value,
+    frame: form['frame'].value,
+    timer0Min: form['timer0-min'].value,
+    timer0Max: form['timer0-max'].value,
+    macAddr: form['macaddr'].value
+  };
+  (document.getElementById("saved") as HTMLSpanElement).innerText = "Saved.";
+  window.localStorage.setItem("params", JSON.stringify(obj));
+}
+
+interface Params {
+  nazo1: string;
+  nazo2: string;
+  nazo3: string;
+  nazo4: string;
+  nazo5: string;
+  vcount: string;
+  gxstat: string;
+  frame: string;
+  timer0Min: string;
+  timer0Max: string;
+  macAddr: string;
+}
+
+export function load5genParams() {
+  const obj : Params = JSON.parse(window.localStorage.getItem("params") || "{}");
+  const form = document.getElementById('form') as Form;
+  form['nazo1'].value = obj.nazo1;
+  form['nazo2'].value = obj.nazo2;
+  form['nazo3'].value = obj.nazo3;
+  form['nazo4'].value = obj.nazo4;
+  form['nazo5'].value = obj.nazo5;
+  form['vcount'].value = obj.vcount;
+  form['gxstat'].value = obj.gxstat;
+  form['frame'].value = obj.frame;
+  form['timer0-min'].value = obj.timer0Min;
+  form['timer0-max'].value = obj.timer0Max;
+  form['macaddr'].value = obj.macAddr;
+}
+
 export function searchIseedForGen4(freqs: number[], upper: number, upperErr: number, hour: number, minFrame: number, maxFrame: number, maxFrm: number, minFreq: number) {
   const results: string[] = [];
   for (let u = upper - upperErr; u <= upper + upperErr; u ++) {
