@@ -144,7 +144,7 @@ export function setupNowTimeButton() {
 
 export function save5genParams() {
   const form = document.getElementById('form') as Form;
-  var obj = {
+  const obj = {
     nazo1: form['nazo1'].value,
     nazo2: form['nazo2'].value,
     nazo3: form['nazo3'].value,
@@ -178,17 +178,17 @@ interface Params {
 export function load5genParams() {
   const obj : Params = JSON.parse(window.localStorage.getItem("params") || "{}");
   const form = document.getElementById('form') as Form;
-  form['nazo1'].value = obj.nazo1;
-  form['nazo2'].value = obj.nazo2;
-  form['nazo3'].value = obj.nazo3;
-  form['nazo4'].value = obj.nazo4;
-  form['nazo5'].value = obj.nazo5;
-  form['vcount'].value = obj.vcount;
-  form['gxstat'].value = obj.gxstat;
-  form['frame'].value = obj.frame;
-  form['timer0-min'].value = obj.timer0Min;
-  form['timer0-max'].value = obj.timer0Max;
-  form['macaddr'].value = obj.macAddr;
+  if (obj.nazo1 != undefined) form['nazo1'].value = obj.nazo1;
+  if (obj.nazo2 != undefined) form['nazo2'].value = obj.nazo2;
+  if (obj.nazo3 != undefined) form['nazo3'].value = obj.nazo3;
+  if (obj.nazo4 != undefined) form['nazo4'].value = obj.nazo4;
+  if (obj.nazo4 != undefined) form['nazo5'].value = obj.nazo5;
+  if (obj.vcount != undefined) form['vcount'].value = obj.vcount;
+  if (obj.gxstat != undefined) form['gxstat'].value = obj.gxstat;
+  if (obj.frame != undefined) form['frame'].value = obj.frame;
+  if (obj.timer0Min != undefined) form['timer0-min'].value = obj.timer0Min;
+  if (obj.timer0Max != undefined) form['timer0-max'].value = obj.timer0Max;
+  if (obj.macAddr != undefined) form['macaddr'].value = obj.macAddr;
 }
 
 export function searchIseedForGen4(freqs: number[], upper: number, upperErr: number, hour: number, minFrame: number, maxFrame: number, maxFrm: number, minFreq: number) {
