@@ -1,10 +1,9 @@
 import { AbstractLCG, LCG, Uint64LCG } from './lcg';
 import { RATIO } from '../audio/constant';
-import { hex, parseUint64 } from './util';
+import { hex, dec, parseUint64 } from './util';
 import { Uint64 } from './uint64';
 
 interface Form extends HTMLFormElement {
-  'mode': HTMLInputElement;
   'upper-4gen-iseed': HTMLInputElement;
   'upper-err-4gen-iseed': HTMLInputElement;
   'hour-4gen-iseed': HTMLInputElement;
@@ -15,6 +14,18 @@ interface Form extends HTMLFormElement {
   'frm-4gen': HTMLInputElement;
   'seed-5gen': HTMLInputElement;
   'frm-5gen': HTMLInputElement;
+  'nazo1': HTMLInputElement;
+  'nazo2': HTMLInputElement;
+  'nazo3': HTMLInputElement;
+  'nazo4': HTMLInputElement;
+  'vcount': HTMLInputElement;
+  'gxstat': HTMLInputElement;
+  'frame': HTMLInputElement;
+  'timer0-min': HTMLInputElement;
+  'timer0-max': HTMLInputElement;
+  'macaddr': HTMLInputElement;
+  'time': HTMLInputElement;
+  'time-err': HTMLInputElement;
 }
 
 export function search(): string[] {
@@ -72,6 +83,12 @@ export function setupNowTimeButton() {
     const date = new Date();
     upperInput.value = "0x" + (((date.getMonth() + 1) * date.getDate() + date.getMinutes() + date.getSeconds()) % 256).toString(16);
     hourInput.value = String(date.getHours());
+  });
+  const timeInput = form['time'];
+  const button2 = document.getElementById('now-time-button2') as HTMLButtonElement;
+  button2.addEventListener('click', () => {
+    const date = new Date();
+    timeInput.value = date.getFullYear() + "-" + dec(date.getMonth(), 2) + "-" + dec(date.getDate(), 2) + " " + dec(date.getHours(), 2) + ":" + dec(date.getMinutes(), 2) + ":" + dec(date.getSeconds(), 2);
   });
 }
 

@@ -8,3 +8,11 @@ export function parseUint64(str: string) {
 export function hex(x: number) {
   return ('00000000' + x.toString(16)).slice(-8);
 }
+
+export function dec(x: number, n: number) {
+  var str = String(x);
+  for (var i = n - str.length; i > 0; i --) {
+    str = '0' + str;
+  }
+  return str;
+}
