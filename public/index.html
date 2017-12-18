@@ -30,48 +30,51 @@
     <div id="root"></div>
     <form id="form" onsubmit="return false;">
     <p>
-    <label><input type="radio" name="mode" value="4gen-iseed" checked>4gen 初期seed検索</label>
-    <label><input type="radio" name="mode" value="4gen-frm">4gen 消費数検索</label>
-    <label><input type="radio" name="mode" value="5gen-iseed">5gen 初期seed検索</label>
-    <label><input type="radio" name="mode" value="5gen-frm">5gen 消費数検索</label>
+    <label><input type="radio" name="mode" value="4gen-iseed" required checked>4gen 初期seed検索</label>
+    <label><input type="radio" name="mode" value="4gen-frm" required>4gen 消費数検索</label>
+    <label><input type="radio" name="mode" value="5gen-iseed" required>5gen 初期seed検索</label>
+    <label><input type="radio" name="mode" value="5gen-frm" required>5gen 消費数検索</label>
     <div class="form-segment" id="form-segment-4gen-iseed">
     <p>
-    月×日+分+秒: <input type="text" name="upper-4gen-iseed" value="" size=5> ± <input type="text" name="upper-err-4gen-iseed" value="1" size=5>
-    &#32;時: <input type="text" name="hour-4gen-iseed" value="" size=5>
+    月×日+分+秒: <input type="text" name="upper-4gen-iseed" value="0x00" size=5 required pattern="0[xX][0-9a-fA-F]+|\d+"> ±
+    &#32;<input type="text" name="upper-err-4gen-iseed" value="1" size=5 required pattern="0[xX][0-9a-fA-F]+|\d+">
+    &#32;時: <input type="text" name="hour-4gen-iseed" value="0" size=5 required pattern="0[xX][0-9a-fA-F]+|\d+">
     &#32;<a id="now-time-button" href="javascript:void(0)" class="likeabutton">現在時刻</a><br>
-    &#32;待機フレーム+年: <input type="text" name="min-frame-4gen-iseed" value="0x190" size=8> ～ <input type="text" name="max-frame-4gen-iseed" value="0x450" size=8>
-    &#32;消費数: <input type="text" name="frm-4gen-iseed" value="50" size=8>まで
+    &#32;待機フレーム+年: <input type="text" name="min-frame-4gen-iseed" value="0x190" size=8 required pattern="0[xX][0-9a-fA-F]+|\d+"> ～
+    &#32;<input type="text" name="max-frame-4gen-iseed" value="0x450" size=8 required pattern="0[xX][0-9a-fA-F]+|\d+">
+    &#32;消費数: <input type="text" name="frm-4gen-iseed" value="50" size=8 required pattern="0[xX][0-9a-fA-F]+|\d+">まで
     </p>
     </div>
     <div class="form-segment" id="form-segment-4gen-frm">
     <p>
-    &#32;seed: <input type="text" name="seed-4gen" value="0x00000000" size=22>
-    &#32;消費数: <input type="text" name="frm-4gen" value="1000" size=10>まで
+    &#32;seed: <input type="text" name="seed-4gen" value="0x00000000" size=22 required pattern="0[xX][0-9a-fA-F]+|\d+">
+    &#32;消費数: <input type="text" name="frm-4gen" value="1000" size=10 required pattern="0[xX][0-9a-fA-F]+|\d+">まで
     </p>
     </div>
     <div class="form-segment" id="form-segment-5gen-iseed">
     <p>
-    nazo1: <input type="text" name="nazo1" value="0x02215f30" size=16>
-    &#32;nazo2: <input type="text" name="nazo2" value="0x0221602c" size=16>
-    &#32;nazo3: <input type="text" name="nazo3" value="0x0221602c" size=16>
-    &#32;nazo4: <input type="text" name="nazo4" value="0x02216078" size=16>
-    &#32;nazo5: <input type="text" name="nazo5" value="0x02216078" size=16><br>
-    &#32;vcount: <input type="text" name="vcount" value="0x5c" size=16>
-    &#32;gxstat: <input type="text" name="gxstat" value="0x6000000" size=16>
-    &#32;frame: <input type="text" name="frame" value="0x5" size=16><br>
-    &#32;timer0: <input type="text" name="timer0-min" value="0x0bfb" size=16> ～ <input type="text" name="timer0-max" value="0x0bfb" size=16><br>
-    &#32;mac addr: <input type="text" name="macaddr" value="00-09-BF-12-34-56" size=28>
+    nazo1: <input type="text" name="nazo1" value="0x02215f30" size=16 required pattern="0[xX][0-9a-fA-F]+|\d+">
+    &#32;nazo2: <input type="text" name="nazo2" value="0x0221602c" size=16 required pattern="0[xX][0-9a-fA-F]+|\d+">
+    &#32;nazo3: <input type="text" name="nazo3" value="0x0221602c" size=16 required pattern="0[xX][0-9a-fA-F]+|\d+">
+    &#32;nazo4: <input type="text" name="nazo4" value="0x02216078" size=16 required pattern="0[xX][0-9a-fA-F]+|\d+">
+    &#32;nazo5: <input type="text" name="nazo5" value="0x02216078" size=16 required pattern="0[xX][0-9a-fA-F]+|\d+"><br>
+    &#32;vcount: <input type="text" name="vcount" value="0x5c" size=16 required pattern="0[xX][0-9a-fA-F]+|\d+">
+    &#32;gxstat: <input type="text" name="gxstat" value="0x6000000" size=16 required pattern="0[xX][0-9a-fA-F]+|\d+">
+    &#32;frame: <input type="text" name="frame" value="0x5" size=16 required pattern="0[xX][0-9a-fA-F]+|\d+"><br>
+    &#32;timer0: <input type="text" name="timer0-min" value="0x0bfb" size=16 required pattern="0[xX][0-9a-fA-F]+|\d+">
+    &#32;～ <input type="text" name="timer0-max" value="0x0bfb" size=16 required pattern="0[xX][0-9a-fA-F]+|\d+"><br>
+    &#32;mac addr: <input type="text" name="macaddr" value="00-09-BF-12-34-56" size=28 required pattern="(?:[0-9a-fA-F]{2}-){5}[0-9a-fA-F]{2}">
     &#32;<a id="save-button" href="javascript:void(0)" class="likeabutton">保存</a>
     &#32;<span id="saved"></span><br>
-    &#32;time: <input type="text" name="time" value="" size=28> <a id="now-time-button2" href="javascript:void(0)" class="likeabutton">現在時刻</a>
-    &#32; ± <input type="text" name="time-err" value="2" size=6> sec.
-    &#32;消費数: <input type="text" name="frm-5gen-iseed" value="200" size=10>まで
+    &#32;time: <input type="text" name="time" value="2000-01-01 00:00:00" size=28 required pattern="\d+-\d{2}-\d{2} \d{2}:\d{2}:\d{2}"> <a id="now-time-button2" href="javascript:void(0)" class="likeabutton">現在時刻</a>
+    &#32; ± <input type="text" name="time-err" value="2" size=6 required pattern="0[xX][0-9a-fA-F]+|\d+"> sec.
+    &#32;消費数: <input type="text" name="frm-5gen-iseed" value="200" size=10 required pattern="0[xX][0-9a-fA-F]+|\d+">まで
     </p>
     </div>
     <div class="form-segment" id="form-segment-5gen-frm">
     <p>
-    &#32;seed: <input type="text" name="seed-5gen" value="0x0000000000000000" size=22>
-    &#32;消費数: <input type="text" name="frm-5gen" value="1000" size=10>まで
+    &#32;seed: <input type="text" name="seed-5gen" value="0x0000000000000000" size=22 required pattern="0[xX][0-9a-fA-F]+">
+    &#32;消費数: <input type="text" name="frm-5gen" value="1000" size=10 required pattern="0[xX][0-9a-fA-F]+|\d+">まで
     </p>
     </div>
     </div>
