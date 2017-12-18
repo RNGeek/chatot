@@ -12,7 +12,7 @@ import { visualize } from './audio/visualize';
 import { search, setupNowTimeButton, setupFormSegments, save5genParams, load5genParams } from './rng/search';
 
 async function main() {
-  (document.getElementById('search') as HTMLButtonElement).addEventListener('click', (e) => {
+  (document.getElementById('form') as HTMLFormElement).addEventListener('submit', (e) => {
     const results = search();
     const outputTextarea = document.getElementById('output') as HTMLTextAreaElement;
     if (results.length > 0) {
