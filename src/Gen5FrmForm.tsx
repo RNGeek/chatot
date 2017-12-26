@@ -1,18 +1,18 @@
 import * as React from 'react';
 
-interface Gen4FrmFormProps {
+interface Gen5FrmFormProps {
 }
-interface Gen4FrmFormState {
+interface Gen5FrmFormState {
     seed: string;
     frm: string;
     visible: boolean;
 }
 
-class Gen4FrmForm extends React.Component<Gen4FrmFormProps, Gen4FrmFormState> {
-    constructor(props: Gen4FrmFormProps) {
+class Gen5FrmForm extends React.Component<Gen5FrmFormProps, Gen5FrmFormState> {
+    constructor(props: Gen5FrmFormProps) {
         super(props);
         this.state = {
-            seed: '0x00000000',
+            seed: '0x0000000000000000',
             frm: '1000',
             visible: true,
         };
@@ -43,4 +43,4 @@ class Gen4FrmForm extends React.Component<Gen4FrmFormProps, Gen4FrmFormState> {
     }
 }
 
-export default Gen4FrmForm;
+export default Gen5FrmForm;

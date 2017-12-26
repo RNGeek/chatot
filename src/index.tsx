@@ -12,21 +12,21 @@ import { visualize } from './audio/visualize';
 import { search, setupNowTimeButton, setupFormSegments, save5genParams, load5genParams } from './rng/search';
 
 async function main() {
-  (document.getElementById('form') as HTMLFormElement).addEventListener('submit', (e) => {
-    const results = search();
-    const outputTextarea = document.getElementById('output') as HTMLTextAreaElement;
-    if (results.length > 0) {
-      outputTextarea.value = results.join('\n');
-    } else {
-      outputTextarea.value = 'not found';
-    }
-  });
-  setupNowTimeButton();
-  setupFormSegments();
-  (document.getElementById('save-button') as HTMLButtonElement).addEventListener('click', (e) => {
-    save5genParams();
-  });
-  load5genParams();
+  // (document.getElementById('form') as HTMLFormElement).addEventListener('submit', (e) => {
+  //   const results = search();
+  //   const outputTextarea = document.getElementById('output') as HTMLTextAreaElement;
+  //   if (results.length > 0) {
+  //     outputTextarea.value = results.join('\n');
+  //   } else {
+  //     outputTextarea.value = 'not found';
+  //   }
+  // });
+  // setupNowTimeButton();
+  // setupFormSegments();
+  // (document.getElementById('save-button') as HTMLButtonElement).addEventListener('click', (e) => {
+  //   save5genParams();
+  // });
+  // load5genParams();
   try {
     const stream = await navigator.mediaDevices.getUserMedia({audio: true}); // マイクへのアクセス要求
     const ctx = new AudioContext();
