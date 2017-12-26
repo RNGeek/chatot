@@ -4,12 +4,8 @@ import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 import './index.css';
 import './polyfill/AudioContext';
-import { Uint64 } from './rng/uint64';
-import { hex, parseUint64 } from './rng/util';
-import { LCG, Uint64LCG, AbstractLCG } from './rng/lcg';
-import { getMaxFftSize } from './audio/getMaxFftSize';
-import { visualize } from './audio/visualize';
-import { search, setupNowTimeButton, setupFormSegments, save5genParams, load5genParams } from './rng/search';
+import { analyze } from './audio/analyze';
+import { searchFromForm, setupNowTimeButton, setupFormSegments, save5genParams, load5genParams } from './rng/searchFromForm';
 
 async function main() {
   // (document.getElementById('form') as HTMLFormElement).addEventListener('submit', (e) => {
@@ -41,7 +37,7 @@ async function main() {
     // analyser.smoothingTimeConstant = 0.85;
     source.connect(analyser);
 
-    visualize(analyser, ctx); // 音声の解析
+    analyze(analyser, ctx); // 音声の解析
   } catch (e) {
     alert(e);
   }
