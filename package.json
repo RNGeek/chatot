@@ -5,7 +5,8 @@
   "dependencies": {
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
-    "react-scripts-ts": "2.8.0"
+    "react-scripts-ts": "2.8.0",
+    "react-toggle-display": "2.2.0"
   },
   "scripts": {
     "start": "cross-env HTTPS=true react-scripts-ts start",

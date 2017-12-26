@@ -5,10 +5,26 @@ import Gen4FrmForm from './Gen4FrmForm';
 import Gen4ISeedForm from './Gen4ISeedForm';
 import Gen5FrmForm from './Gen5FrmForm';
 import Gen5ISeedForm from './Gen5ISeedForm';
+import ToggleDisplay from 'react-toggle-display';
 
 const logo = require('./logo.svg');
 
-class App extends React.Component {
+interface AppProps {
+}
+interface AppState {
+  selected: string;
+}
+
+class App extends React.Component<AppProps, AppState> {
+  constructor(props: AppProps) {
+      super(props);
+      this.state = {
+          selected: '4gen-iseed'
+      };
+  }
+  handleModeChange(selected: string) {
+    this.setState({ selected: selected });
+  }
   render() {
     return (
       <div>
@@ -18,11 +34,11 @@ class App extends React.Component {
             <h2>Welcome to React</h2>
           </div>
         </div>
-        <ModeSelect onChange={(selected) => { console.log(selected); }} />
-        <Gen4ISeedForm />
-        <Gen4FrmForm />
-        <Gen5ISeedForm />
-        <Gen5FrmForm />
+        <ModeSelect onChange={(selected) => { this.handleModeChange(selected); }} />
+        <ToggleDisplay if={this.state.selected === '4gen-iseed'}><Gen4ISeedForm /></ToggleDisplay>
+        <ToggleDisplay if={this.state.selected === '4gen-frm'}><Gen4FrmForm /></ToggleDisplay>
+        <ToggleDisplay if={this.state.selected === '5gen-iseed'}><Gen5ISeedForm /></ToggleDisplay>
+        <ToggleDisplay if={this.state.selected === '5gen-frm'}><Gen5FrmForm /></ToggleDisplay>
         <div className="input-and-output">
         <div>Input:<br /><textarea id="input" rows={10} cols={40} value="" /></div>
         <div><input type="submit" id="search" value="Search" /></div>
