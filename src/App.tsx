@@ -8,6 +8,7 @@ import { Gen5ISeedForm, Gen5ISeedFormState } from './Gen5ISeedForm';
 import { parseUint64 } from './rng/util';
 import ToggleDisplay from 'react-toggle-display';
 import { searchSeedForGen4, searchIseedForGen4, searchfrmForGen4, searchIseedForGen5, searchfrmForGen5 } from './rng/search';
+import { Analyser } from './audio/Analyser';
 
 const logo = require('./logo.svg');
 
@@ -16,6 +17,9 @@ interface AppProps {
 interface AppState {
   selected: string;
   freq: string;
+  maxDecibels: string;
+  maxHz: number;
+  chatotGrowling: boolean;
   input: string;
   output: string;
   gen4ISeedFormState: Gen4ISeedFormState;
@@ -30,6 +34,9 @@ class App extends React.Component<AppProps, AppState> {
       this.state = {
           selected: '4gen-iseed',
           freq: '880',
+          maxDecibels: '-40',
+          maxHz: 0,
+          chatotGrowling: false,
           input: '',
           output: '',
           gen4ISeedFormState: {
@@ -65,6 +72,22 @@ class App extends React.Component<AppProps, AppState> {
             frm: '',
           },
       };
+      this.handleInputChange = this.handleInputChange.bind(this);
+      this.handleTextAreaChange = this.handleTextAreaChange.bind(this);
+      const analyser = new Analyser();
+      analyser.getFreq = () => Number(this.state.freq);
+      analyser.getmaxDecibels = () => Number(this.state.maxDecibels);
+      analyser.setMaxHz = (maxHz) => this.setState({ maxHz: maxHz });
+      analyser.setChatotGrowling = (chatotGrowling) => this.setState({ chatotGrowling: chatotGrowling });
+      analyser.appendToInput = (freq) => {
+        let value = this.state.input;
+        if (value !== '') {
+          value += '\n';
+        }
+        value += freq;
+        this.setState({ input: value });
+      };
+      analyser.start();
   }
   handleModeChange(selected: string) {
     this.setState({ selected: selected });
@@ -139,29 +162,52 @@ class App extends React.Component<AppProps, AppState> {
     }
     this.setState({ output: result.length > 0 ? result.join('\n') : 'not found' });
   }
+  
+  handleTextAreaChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
+    const target = event.target;
+    const name = target.name;
+    let state = this.state;
+    switch (name) {
+      case 'input':
+        state = Object.assign(state, { input: target.value });
+        break;
+      default:
+    }
+    this.setState(state);
+  }
+  
+  handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const target = event.target;
+    const name = target.name;
+    let state = this.state;
+    switch (name) {
+      case 'freq':
+        state = Object.assign(state, { freq: target.value });
+        break;
+      case 'maxDecibels':
+        state = Object.assign(state, { maxDecibels: target.value });
+        break;
+      default:
+    }
+    this.setState(state);
+  }
   render() {
     return (
       <div>
-        <div className="App">
-          <div className="App-header">
-            <img src={logo} className="App-logo" alt="logo" />
-            <h2>Welcome to React</h2>
-          </div>
-        </div>
         <ModeSelect onChange={(selected) => { this.handleModeChange(selected); }} />
         <ToggleDisplay if={this.state.selected === '4gen-iseed'}><Gen4ISeedForm onchange={(state) => { this.handleGen4ISeedFormStateChange(state); }} /></ToggleDisplay>
         <ToggleDisplay if={this.state.selected === '4gen-frm'}><Gen4FrmForm onchange={(state) => { this.handleGen4FrmFormStateChange(state); }} /></ToggleDisplay>
         <ToggleDisplay if={this.state.selected === '5gen-iseed'}><Gen5ISeedForm onchange={(state) => { this.handleGen5ISeedFormStateChange(state); }} /></ToggleDisplay>
         <ToggleDisplay if={this.state.selected === '5gen-frm'}><Gen5FrmForm onchange={(state) => { this.handleGen5FrmFormStateChange(state); }} /></ToggleDisplay>
         <div className="input-and-output">
-        <div>Input:<br /><textarea id="input" rows={10} cols={40} value={this.state.input} /></div>
+        <div>Input:<br /><textarea name="input" rows={10} cols={40} value={this.state.input} onChange={this.handleTextAreaChange} /></div>
         <div><input type="submit" id="search" value="Search" onClick={() => { this.handleSubmit(); }} /></div>
         <div>Output:<br /><textarea id="output" rows={10} cols={80} value={this.state.output} /></div> 
         </div>
-        <p id="maxHz">{}</p>
+        <p id="maxHz" style={{ background: this.state.chatotGrowling ? '#f9c94f' : 'white' }}>{this.state.maxHz} Hz</p>
         <p>
-          基準周波数: <input type="text" id="freq" value={this.state.freq} size={6} /> Hz
-          maxDecibels: <input type="text" id="maxDecibels" value="-40" size={6} />
+          基準周波数: <input type="text" name="freq" value={this.state.freq} size={6} onChange={this.handleInputChange} /> Hz
+          maxDecibels: <input type="text" name="maxDecibels" value={this.state.maxDecibels} size={6} onChange={this.handleInputChange} />
         </p>
       </div>
     );

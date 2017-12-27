@@ -9,6 +9,10 @@ h1 {
   background-color: #ACD6E7;
 }
 
+h1 img {
+  vertical-align: middle;
+}
+
 .likeabutton {
   appearance: button;
   -moz-appearance: button;
