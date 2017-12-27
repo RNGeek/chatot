@@ -1,18 +1,18 @@
 import * as React from 'react';
 
 interface Gen4ISeedFormProps {
+    onchange: (state: Gen4ISeedFormState) => void;
 }
-interface Gen4ISeedFormState {
+export interface Gen4ISeedFormState {
     upper: string;
     upperErr: string;
     hour: string;
     minFrame: string;
     maxFrame: string;
     frm: string;
-    visible: true;
 }
 
-class Gen4ISeedForm extends React.Component<Gen4ISeedFormProps, Gen4ISeedFormState> {
+export class Gen4ISeedForm extends React.Component<Gen4ISeedFormProps, Gen4ISeedFormState> {
     constructor(props: Gen4ISeedFormProps) {
         super(props);
         this.state = {
@@ -22,40 +22,43 @@ class Gen4ISeedForm extends React.Component<Gen4ISeedFormProps, Gen4ISeedFormSta
             minFrame: '0x190',
             maxFrame: '0x450',
             frm: '50',
-            visible: true,
         };
+        this.props.onchange(this.state);
         this.handleInputChange = this.handleInputChange.bind(this);
     }
 
     handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
         const target = event.target;
         const name = target.name;
+        let state = this.state;
         switch (name) {
             case 'upper':
-                this.setState({ upper: target.value });
+                state = Object.assign(state, { upper: target.value });
                 break;
             case 'upper-err':
-                this.setState({ upperErr: target.value });
+                state = Object.assign(state, { upperErr: target.value });
                 break;
             case 'hour':
-                this.setState({ hour: target.value });
+                state = Object.assign(state, { hour: target.value });
                 break;
             case 'min-frame':
-                this.setState({ minFrame: target.value });
+                state = Object.assign(state, { minFrame: target.value });
                 break;
             case 'max-frame':
-                this.setState({ maxFrame: target.value });
+                state = Object.assign(state, { maxFrame: target.value });
                 break;
             case 'frm':
-                this.setState({ frm: target.value });
+                state = Object.assign(state, { frm: target.value });
                 break;
             default:
         }
+        this.setState(state);
+        this.props.onchange(state);
     }
 
     render() {
         return (
-            <form action="javascript:void(0)" style={{display: this.state.visible ? 'block' : 'none'}}>
+            <form action="javascript:void(0)">
                 月×日+分+秒: <input type="text" name="upper" value={this.state.upper} size={5} required={true} pattern="0[xX][0-9a-fA-F]+|\\d+" onChange={this.handleInputChange} /> ±
                 <input type="text" name="upper-err" value={this.state.upperErr} size={5} required={true} pattern="0[xX][0-9a-fA-F]+|\\d+" onChange={this.handleInputChange} />
                 時: <input type="text" name="hour" value={this.state.hour} size={5} required={true} pattern="0[xX][0-9a-fA-F]+|\\d+" onChange={this.handleInputChange} />
@@ -67,5 +70,3 @@ class Gen4ISeedForm extends React.Component<Gen4ISeedFormProps, Gen4ISeedFormSta
         );
     }
 }
-
-export default Gen4ISeedForm;

@@ -5,24 +5,9 @@ import registerServiceWorker from './registerServiceWorker';
 import './index.css';
 import './polyfill/AudioContext';
 import { analyze } from './audio/analyze';
-import { searchFromForm, setupNowTimeButton, setupFormSegments, save5genParams, load5genParams } from './rng/searchFromForm';
+import { searchFromForm } from './rng/searchFromForm';
 
 async function main() {
-  // (document.getElementById('form') as HTMLFormElement).addEventListener('submit', (e) => {
-  //   const results = search();
-  //   const outputTextarea = document.getElementById('output') as HTMLTextAreaElement;
-  //   if (results.length > 0) {
-  //     outputTextarea.value = results.join('\n');
-  //   } else {
-  //     outputTextarea.value = 'not found';
-  //   }
-  // });
-  // setupNowTimeButton();
-  // setupFormSegments();
-  // (document.getElementById('save-button') as HTMLButtonElement).addEventListener('click', (e) => {
-  //   save5genParams();
-  // });
-  // load5genParams();
   try {
     const stream = await navigator.mediaDevices.getUserMedia({audio: true}); // マイクへのアクセス要求
     const ctx = new AudioContext();
@@ -32,12 +17,10 @@ async function main() {
 
     // analyserの初期化
     const analyser = ctx.createAnalyser();
-    // analyser.minDecibels = -90;
     analyser.maxDecibels = -40;
-    // analyser.smoothingTimeConstant = 0.85;
     source.connect(analyser);
 
-    analyze(analyser, ctx); // 音声の解析
+    analyze(analyser, ctx);
   } catch (e) {
     alert(e);
   }

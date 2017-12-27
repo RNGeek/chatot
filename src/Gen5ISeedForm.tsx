@@ -1,8 +1,9 @@
 import * as React from 'react';
 
 interface Gen5ISeedFormProps {
+    onchange: (state: Gen5ISeedFormState) => void;
 }
-interface Gen5ISeedFormState {
+export interface Gen5ISeedFormState {
     nazo1: string;
     nazo2: string;
     nazo3: string;
@@ -17,10 +18,9 @@ interface Gen5ISeedFormState {
     time: string;
     timeErr: string;
     frm: string;
-    visible: boolean;
 }
 
-class Gen5ISeedForm extends React.Component<Gen5ISeedFormProps, Gen5ISeedFormState> {
+export class Gen5ISeedForm extends React.Component<Gen5ISeedFormProps, Gen5ISeedFormState> {
     constructor(props: Gen5ISeedFormProps) {
         super(props);
         this.state = {
@@ -38,64 +38,67 @@ class Gen5ISeedForm extends React.Component<Gen5ISeedFormProps, Gen5ISeedFormSta
             time: '2000-01-01 00:00:00',
             timeErr: '2',
             frm: '200',
-            visible: true,
         };
+        this.props.onchange(this.state);
         this.handleInputChange = this.handleInputChange.bind(this);
     }
 
     handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
         const target = event.target;
         const name = target.name;
+        let state = this.state;
         switch (name) {
             case 'nazo1':
-                this.setState({ nazo1: target.value });
+                state = Object.assign(state, { nazo1: target.value });
                 break;
             case 'nazo2':
-                this.setState({ nazo2: target.value });
+                state = Object.assign(state, { nazo2: target.value });
                 break;
             case 'nazo3':
-                this.setState({ nazo3: target.value });
+                state = Object.assign(state, { nazo3: target.value });
                 break;
             case 'nazo4':
-                this.setState({ nazo4: target.value });
+                state = Object.assign(state, { nazo4: target.value });
                 break;
             case 'nazo5':
-                this.setState({ nazo5: target.value });
+                state = Object.assign(state, { nazo5: target.value });
                 break;
             case 'vcount':
-                this.setState({ vcount: target.value });
+                state = Object.assign(state, { vcount: target.value });
                 break;
             case 'gxstat':
-                this.setState({ gxstat: target.value });
+                state = Object.assign(state, { gxstat: target.value });
                 break;
             case 'frame':
-                this.setState({ frame: target.value });
+                state = Object.assign(state, { frame: target.value });
                 break;
             case 'timer0-min':
-                this.setState({ timer0Min: target.value });
+                state = Object.assign(state, { timer0Min: target.value });
                 break;
             case 'timer0-max':
-                this.setState({ timer0Max: target.value });
+                state = Object.assign(state, { timer0Max: target.value });
                 break;
             case 'macaddr':
-                this.setState({ macAddr: target.value });
+                state = Object.assign(state, { macAddr: target.value });
                 break;
             case 'time':
-                this.setState({ time: target.value });
+                state = Object.assign(state, { time: target.value });
                 break;
             case 'time-err':
-                this.setState({ timeErr: target.value });
+                state = Object.assign(state, { timeErr: target.value });
                 break;
             case 'frm':
-                this.setState({ frm: target.value });
+                state = Object.assign(state, { frm: target.value });
                 break;
             default:
         }
+        this.setState(state);
+        this.props.onchange(state);
     }
 
     render() {
         return (
-            <form action="javascript:void(0)" style={{display: this.state.visible ? 'block' : 'none'}}>
+            <form action="javascript:void(0)">
                 nazo1: <input type="text" name="nazo1" value={this.state.nazo1} size={16} required={true} pattern="0[xX][0-9a-fA-F]+|\\d+" onChange={this.handleInputChange} />
                 nazo2: <input type="text" name="nazo2" value={this.state.nazo2} size={16} required={true} pattern="0[xX][0-9a-fA-F]+|\\d+" onChange={this.handleInputChange} />
                 nazo3: <input type="text" name="nazo3" value={this.state.nazo3} size={16} required={true} pattern="0[xX][0-9a-fA-F]+|\\d+" onChange={this.handleInputChange} />
@@ -117,5 +120,3 @@ class Gen5ISeedForm extends React.Component<Gen5ISeedFormProps, Gen5ISeedFormSta
         );
     }
 }
-
-export default Gen5ISeedForm;
