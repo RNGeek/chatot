@@ -56,13 +56,23 @@ export class Gen4ISeedForm extends React.Component<Gen4ISeedFormProps, Gen4ISeed
         this.props.onchange(state);
     }
 
+    handleNowTimeButtonClick() {
+        let state = this.state;
+        const date = new Date();
+        const upper = '0x' + (((date.getMonth() + 1) * date.getDate() + date.getMinutes() + date.getSeconds()) % 256).toString(16);
+        const hour = String(date.getHours());
+        state = Object.assign(state, { upper: upper, hour: hour });
+        this.setState(state);
+        this.props.onchange(state);
+    }
+
     render() {
         return (
             <form action="javascript:void(0)">
                 月×日+分+秒: <input type="text" name="upper" value={this.state.upper} size={5} required={true} pattern="0[xX][0-9a-fA-F]+|\\d+" onChange={this.handleInputChange} /> ±
                 <input type="text" name="upper-err" value={this.state.upperErr} size={5} required={true} pattern="0[xX][0-9a-fA-F]+|\\d+" onChange={this.handleInputChange} />
                 時: <input type="text" name="hour" value={this.state.hour} size={5} required={true} pattern="0[xX][0-9a-fA-F]+|\\d+" onChange={this.handleInputChange} />
-                <a id="now-time-button" href="javascript:void(0)" className="likeabutton">現在時刻</a><br />
+                <a id="now-time-button" href="javascript:void(0)" className="likeabutton" onClick={() => this.handleNowTimeButtonClick()}>現在時刻</a><br />
                 待機フレーム+年: <input type="text" name="min-frame" value={this.state.minFrame} size={8} required={true} pattern="0[xX][0-9a-fA-F]+|\\d+"  onChange={this.handleInputChange} /> ～
                 <input type="text" name="max-frame" value={this.state.maxFrame} size={8} required={true} pattern="0[xX][0-9a-fA-F]+|\\d+"  onChange={this.handleInputChange} />
                 消費数: <input type="text" name="frm" value={this.state.frm} size={8} required={true} pattern="0[xX][0-9a-fA-F]+|\\d+"  onChange={this.handleInputChange} />まで

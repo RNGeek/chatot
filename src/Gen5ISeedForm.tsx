@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { dec } from './rng/util';
 
 interface Gen5ISeedFormProps {
     onchange: (state: Gen5ISeedFormState) => void;
@@ -96,6 +97,15 @@ export class Gen5ISeedForm extends React.Component<Gen5ISeedFormProps, Gen5ISeed
         this.props.onchange(state);
     }
 
+    handleNowTimeButtonClick() {
+        let state = this.state;
+        const date = new Date();
+        const time = date.getFullYear() + '-' + dec(date.getMonth() + 1, 2) + '-' + dec(date.getDate(), 2) + ' ' + dec(date.getHours(), 2) + ':' + dec(date.getMinutes(), 2) + ':' + dec(date.getSeconds(), 2);
+        state = Object.assign(state, { time: time });
+        this.setState(state);
+        this.props.onchange(state);
+    }
+
     render() {
         return (
             <form action="javascript:void(0)">
@@ -113,7 +123,7 @@ export class Gen5ISeedForm extends React.Component<Gen5ISeedFormProps, Gen5ISeed
                 <a id="save-button" href="javascript:void(0)" className="likeabutton">保存</a>
                 <span id="saved" /><br />
                 time: <input type="text" name="time" value={this.state.time} size={28} required={true} pattern="\\d+-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}" onChange={this.handleInputChange} />
-                <a id="now-time-button2" href="javascript:void(0)" className="likeabutton">現在時刻</a>
+                <a id="now-time-button2" href="javascript:void(0)" className="likeabutton" onClick={() => this.handleNowTimeButtonClick()}>現在時刻</a>
                 ± <input type="text" name="time-err" value={this.state.timeErr} size={6} required={true} pattern="0[xX][0-9a-fA-F]+|\\d+" onChange={this.handleInputChange} /> sec.
                 消費数: <input type="text" name="frm" value={this.state.frm} size={10} required={true} pattern="0[xX][0-9a-fA-F]+|\\d+" onChange={this.handleInputChange} />まで
             </form>
